@@ -1,4 +1,4 @@
-let map, geocoder, places, rankPreference, infoWindow;
+let map, geocoder, places, rankPreference, infoWindow, markers = [];
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -55,6 +55,7 @@ async function searchGasStations(location) {
     const response = await places.searchNearby(request);
     const results = response.places;
     clearResults();
+    clearMarkers();
     for (let place of results) {
       let gasData = appendResults(place);
       createMarker(place, gasData);
@@ -103,6 +104,8 @@ function createMarker(place, gasData) {
   google.maps.event.addListener(marker, 'mouseout', function() {
     infoWindow.close();
   });
+
+  markers.push(marker);
 }
 
 
@@ -111,4 +114,11 @@ function clearResults() {
   while (resultsList.firstChild) {
     resultsList.removeChild(resultsList.firstChild);
   }
+}
+
+function clearMarkers() {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+  markers = [];
 }

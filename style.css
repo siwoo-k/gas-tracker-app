@@ -1,0 +1,25 @@
+#map {
+  height: 70%;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, Arial;
+}
+
+.gas-address {
+  font-weight: 400;
+}
+
+.gas-prices {
+  font-weight: 300;
+}
+
+.gas-data {
+  margin: 0;
+}
+
+ol li { padding: 8px 0px; }

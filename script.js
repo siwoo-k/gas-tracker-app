@@ -18,6 +18,10 @@ async function initMap() {
 initMap();
 
 async function getGeocode() {
+  // clear previous results if any
+  clearResults();
+  clearMarkers();
+
   const address = document.getElementById('search-bar').value;
   convertAddress(address);
 }
@@ -26,6 +30,7 @@ async function convertAddress(address) {
   geocoder.geocode({ 'address': address }, function(results, status) {
     if (status === 'OK') {
       map.setCenter(results[0].geometry.location);
+      createCenterMarker(results[0].geometry.location);
       searchGasStations(results[0].geometry.location);
     } else {
       alert('Geocoder was unsucessful: ' + status);
@@ -54,8 +59,6 @@ async function searchGasStations(location) {
   try {
     const response = await places.searchNearby(request);
     const results = response.places;
-    clearResults();
-    clearMarkers();
     for (let place of results) {
       let gasData = appendResults(place);
       createMarker(place, gasData);
@@ -121,4 +124,14 @@ function clearMarkers() {
     markers[i].setMap(null);
   }
   markers = [];
+}
+
+function createCenterMarker(location) {
+  const marker = new google.maps.Marker({
+      map: map,
+      position: location,
+      title: "Your Search Location",
+      icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+  });
+  markers.push(marker);
 }

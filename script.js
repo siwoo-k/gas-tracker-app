@@ -1,4 +1,4 @@
-let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete;
+let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -77,9 +77,7 @@ async function searchGasStations(location) {
     fields: ["displayName", 
              "location", 
              "formattedAddress", 
-             "fuelOptions", 
-             "evChargeOptions", 
-             "regularOpeningHours"],
+             "fuelOptions"],
     locationRestriction: {
       center: location,
       radius: 5000,
@@ -94,8 +92,8 @@ async function searchGasStations(location) {
     const response = await places.searchNearby(request);
     const results = response.places;
     for (let place of results) {
-      let gasData = appendResults(place);
-      createMarker(place, gasData);
+      appendResults(place);
+      createMarker(place);
     }
   } catch (error) {
     alert('Places service was unsuccessful: ' + error.message);
@@ -123,18 +121,50 @@ function appendResults(place) {
 
   listItem.innerHTML = gasData;
 
+  listItem.dataset.latitude = place.location.lat();
+  listItem.dataset.longitude = place.location.lng();
+  listItem.dataset.markerIndex = markers.length;
+
+  listItem.addEventListener('click', function() {
+    const lat = parseFloat(this.dataset.latitude);
+    const lng = parseFloat(this.dataset.longitude);
+    map.panTo({ lat: lat, lng: lng });
+
+    if (lastMarker != null && lastMarker <= markers.length - 1) {
+      markers[lastMarker].setIcon({
+        url: "images/icons/marker.png",
+        scaledSize: new google.maps.Size(32, 32),
+      })
+    }
+
+    for (let i = 0; i < markers.length; i++) {
+      const markerPosition = markers[i].getPosition();
+      if (markerPosition.lat() === lat && markerPosition.lng() === lng) {
+        lastMarker = i;
+        markers[i].setIcon({
+          url: "images/icons/marker.png",
+          scaledSize: new google.maps.Size(48, 48),
+        })
+        break;
+      }
+    }
+  });
+
   resultsList.appendChild(listItem);
-  return gasData;
 }
 
-function createMarker(place, gasData) {
+function createMarker(place) {
   const marker = new google.maps.Marker({
     map: map,
     position: place.location,
+    icon: {
+      url: "images/icons/marker.png",
+      scaledSize: new google.maps.Size(32, 32),
+    }
   });
 
   google.maps.event.addListener(marker, 'mouseover', function() {
-    infoWindow.setContent(gasData);
+    // infoWindow.setContent(gasData);
     infoWindow.open(map, marker);
   });
 
@@ -158,6 +188,7 @@ function clearMarkers() {
     markers[i].setMap(null);
   }
   markers = [];
+  lastMarker = null;
 }
 
 function createCenterMarker(location) {

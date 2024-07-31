@@ -1,4 +1,4 @@
-let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker, isAutoComplete, addresses = [];
+let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker, isAutoComplete, addresses = [], distanceMatrix;
 
 let initialRad = 3000;
 let incrementRad = 3000;
@@ -22,6 +22,7 @@ async function initMap() {
   places = Place;
   rankPreference = SearchNearbyRankPreference;
   infoWindow = new google.maps.InfoWindow();
+  distanceMatrix = new google.maps.DistanceMatrixService();
 
   const input = document.getElementById('search-bar');
 
@@ -109,7 +110,7 @@ async function searchGasStations(location) {
     }
     
     for (let place of filteredResults) {
-      appendResults(place);
+      await appendResults(place);
       createMarker(place);
       addresses.push(place.formattedAddress);
     }
@@ -124,7 +125,7 @@ async function searchGasStations(location) {
   }
 }
 
-function appendResults(place) {
+async function appendResults(place) {
   const resultsList = document.getElementById('results-list');
   const listItem = document.createElement('li');
 
@@ -136,22 +137,37 @@ function appendResults(place) {
     return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
+  let distanceInfo = "";
+  let response = await getDistanceInfo(place);
+
+  if (response != undefined) {
+    distanceInfo = `<span>
+                        ${response[1]} 
+                      </span>
+                      &ensp;
+                      <span style="color: rgb(22, 103, 225);">
+                        ${response[0]} away
+                      </span>
+                      <br>`;      
+  }
+
   listItem.innerHTML = `<strong>
-                   ${place.displayName}
-                 </strong><br>
-                   <span class="gas-address">
-                 ${place.formattedAddress}
-                   </span><br>
-                 <div class="gas-data-div">
-                 <span class="gas-prices">` + 
-                 fuelPricesArray.reverse().join('<br>') + 
-                 `</span>
-                 <div class="gas-data-buttons">
-                  <button><img src="images/icons/copy.png"><div id="copy-tooltip">copy url</div></button>
-                  <button><img src="images/icons/open-google.png"><div id="google-tooltip">open map</div></button>
-                 </div>
-                 </div>
-                 </div>`;
+                          ${place.displayName}
+                        </strong><br>
+                        ${distanceInfo}
+                        <span class="gas-address">
+                          ${place.formattedAddress}
+                        </span><br>
+                        <div class="gas-data-div">
+                          <span class="gas-prices">` + 
+                            fuelPricesArray.reverse().join('<br>') + 
+                          `</span>
+                          <div class="gas-data-buttons">
+                            <button><img src="images/icons/copy.png"><div id="copy-tooltip">copy url</div></button>
+                            <button><img src="images/icons/open-google.png"><div id="google-tooltip">open map</div></button>
+                          </div>
+                        </div>
+                        </div>`;
 
   listItem.dataset.latitude = place.location.lat();
   listItem.dataset.longitude = place.location.lng();
@@ -183,6 +199,34 @@ function appendResults(place) {
   });
 
   resultsList.appendChild(listItem);
+}
+
+async function getDistanceInfo(place) {
+  const request = {
+    origins: [map.getCenter()], 
+    destinations: [place.location], 
+    travelMode: google.maps.TravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.IMPERIAL,
+  };
+
+  try {
+    const response = await new Promise((resolve, reject) => {
+      distanceMatrix.getDistanceMatrix(request, (response, status) => {
+        if (status === google.maps.DistanceMatrixStatus.OK) {
+          resolve(response);
+        } else {
+          reject(new Error(`Distance Matrix request failed with status: ${status}`));
+        }
+      });
+    });
+    const results = response.rows[0].elements[0];
+    const duration = results.duration.text;
+    const distance = results.distance.text;
+
+    return [duration, distance];
+  } catch (error) {
+    // do nothing here
+  }
 }
 
 function createMarker(place) {

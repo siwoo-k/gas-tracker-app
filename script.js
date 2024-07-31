@@ -52,7 +52,7 @@ async function getGeocode() {
 
   if (address.trim() == "") {
     const location = map.getCenter();
-    createCenterMarker(location);
+    createCenterMarker(location, address);
     searchGasStations(location);
   } else {
     convertAddress(address);
@@ -79,10 +79,10 @@ async function searchGasStations(location) {
              "fuelOptions"],
     locationRestriction: {
       center: location,
-      radius: 5000,
+      radius: 3000,
     },
     includedPrimaryTypes: ["gas_station"],
-    maxResultCount: 10,
+    maxResultCount: 20,
     rankPreference: rankPreference.DISTANCE,
     language: "en-US",
   };
@@ -90,7 +90,12 @@ async function searchGasStations(location) {
   try {
     const response = await places.searchNearby(request);
     const results = response.places;
-    for (let place of results) {
+
+    const filteredResults = results.filter(place => 
+      place.fuelOptions && place.fuelOptions.fuelPrices
+    );
+    
+    for (let place of filteredResults) {
       appendResults(place);
       createMarker(place);
     }
@@ -105,16 +110,14 @@ function appendResults(place) {
 
   let gasData = `<div class="gas-data"><strong>${place.displayName}</strong><br><span class="gas-address">${place.formattedAddress}</span><br>`
 
-  if (place.fuelOptions && place.fuelOptions.fuelPrices) {
-    gasData += `<span class="gas-prices">`;
+  gasData += `<span class="gas-prices">`;
 
-    const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
-      const price = (fuelPrice.price.units + fuelPrice.price.nanos / 1e9).toFixed(2);
-      return `${fuelPrice.type} &#36;${price} ${fuelPrice.price.currencyCode}`;
-    });
-  
-    gasData += fuelPricesArray.reverse().join('<br>') + `</span>`;
-  }
+  const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
+    const price = (fuelPrice.price.units + fuelPrice.price.nanos / 1e9).toFixed(2);
+    return `${fuelPrice.type} &#36;${price} ${fuelPrice.price.currencyCode}`;
+  });
+
+  gasData += fuelPricesArray.reverse().join('<br>') + `</span>`;
 
   gasData += `</div>`;
 
@@ -189,15 +192,17 @@ function clearMarkers() {
   lastMarker = null;
 }
 
-function createCenterMarker(location) {
+function createCenterMarker(location, address) {
   const marker = new google.maps.Marker({
       map: map,
       position: location,
+      title: "Your location",
       icon: {
-        url: "images/icons/location-blue.png",
-        scaledSize: new google.maps.Size(32, 32),
-      }
+        url: "images/icons/your-location.png",
+        scaledSize: new google.maps.Size(16, 16),
+      },
   });
+
   markers.push(marker);
 }
 

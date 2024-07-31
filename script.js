@@ -51,7 +51,14 @@ async function getGeocode() {
   clearMarkers();
 
   const address = document.getElementById('search-bar').value;
-  convertAddress(address);
+
+  if (address.trim() == "") {
+    const location = map.getCenter();
+    createCenterMarker(location);
+    searchGasStations(location);
+  } else {
+    convertAddress(address);
+  }
 }
 
 async function convertAddress(address) {

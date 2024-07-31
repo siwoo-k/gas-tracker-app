@@ -19,6 +19,12 @@ async function initMap() {
   places = Place;
   rankPreference = SearchNearbyRankPreference;
   infoWindow = new google.maps.InfoWindow();
+
+  document.getElementById('search-bar').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      getGeocode();
+    }
+  });
 }
 
 initMap();

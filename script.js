@@ -185,8 +185,26 @@ function createMarker(place) {
     }
   });
 
+  const gasItem = document.createElement('div');
+  gasItem.setAttribute("class", "gas-data")
+
+  const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
+    const price = (fuelPrice.price.units + fuelPrice.price.nanos / 1e9).toFixed(2);
+    return `${fuelPrice.type} &#36;${price} ${fuelPrice.price.currencyCode}`;
+  });
+
+  gasItem.innerHTML = `<strong>
+                   ${place.displayName}
+                 </strong><br>
+                   <span class="gas-address">
+                 ${place.formattedAddress}
+                   </span><br>
+                 <span class="gas-prices">` + 
+                 fuelPricesArray.reverse().join('<br>') + 
+                 `</span></div>`;
+
   google.maps.event.addListener(marker, 'mouseover', function() {
-    // infoWindow.setContent(gasData);
+    infoWindow.setContent(gasItem);
     infoWindow.open(map, marker);
   });
 

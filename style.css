@@ -105,8 +105,8 @@ html, body {
   position: absolute;
   left: 30px;
   top: 100px;
+  max-height: 550px;
   padding: 0;
-  bottom: 30px;
   overflow-y: scroll;
   list-style-position: inside;
 }
@@ -147,3 +147,17 @@ html, body {
   padding-left: 10px;
   border: none;
 } 
+
+#show-more-button {
+  float: right;
+  display: flex;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+  color: gray;
+  cursor: pointer;
+}
+
+#show-more-button img {
+  height: 20px;
+}

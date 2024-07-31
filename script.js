@@ -116,7 +116,7 @@ async function searchGasStations(location) {
     const resultsList = document.getElementById('results-list');
     const showMoreButton = document.createElement('div');
 
-    showMoreButton.innerHTML = `<button id=show-more-button onclick="showMoreResults()">show more</button>`;
+    showMoreButton.innerHTML = `<button id=show-more-button onclick="showMoreResults()"><img src="images/icons/show-more.png"> Show more</button>`;
 
     resultsList.appendChild(showMoreButton);
   } catch (error) {
@@ -133,7 +133,7 @@ function appendResults(place) {
   gasData += `<span class="gas-prices">`;
 
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
-    const price = (fuelPrice.price.units + fuelPrice.price.nanos / 1e9).toFixed(2);
+    const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     return `${fuelPrice.type} &#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
@@ -189,8 +189,11 @@ function createMarker(place) {
   gasItem.setAttribute("class", "gas-data")
 
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
-    const price = (fuelPrice.price.units + fuelPrice.price.nanos / 1e9).toFixed(2);
-    return `${fuelPrice.type} &#36;${price} ${fuelPrice.price.currencyCode}`;
+    const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
+    if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      return `REGULAR &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+    }
+    return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
   gasItem.innerHTML = `<strong>

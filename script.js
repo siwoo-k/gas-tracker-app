@@ -1,4 +1,4 @@
-let map, geocoder, places, rankPreference, infoWindow, markers = [];
+let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -25,6 +25,22 @@ async function initMap() {
       getGeocode();
     }
   });
+
+  const input = document.getElementById('search-bar');
+
+  autocomplete = new google.maps.places.Autocomplete(input);
+
+  autocomplete.addListener('place_changed', fillInAddress);
+}
+
+async function fillInAddress() {
+  const place = autocomplete.getPlace();
+  const address = place.formatted_address;
+
+  const selectedAddressDiv = document.getElementById('autocomplete-list');
+  selectedAddressDiv.textContent = `Selected Address: ${address}`;
+
+  getGeocode();
 }
 
 initMap();

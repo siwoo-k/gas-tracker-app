@@ -147,8 +147,8 @@ function appendResults(place) {
                  fuelPricesArray.reverse().join('<br>') + 
                  `</span>
                  <div class="gas-data-buttons">
-                  <button><img src="images/icons/copy.png"></button>
-                  <button><img src="images/icons/open-google.png"></button>
+                  <button><img src="images/icons/copy.png"><div id="copy-tooltip">copy url</div></button>
+                  <button><img src="images/icons/open-google.png"><div id="google-tooltip">open map</div></button>
                  </div>
                  </div>
                  </div>`;

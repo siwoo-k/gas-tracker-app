@@ -103,6 +103,10 @@ html, body {
   align-items: center;
 }
 
+.gas-data-buttons {
+  position: relative;
+}
+
 .gas-data-buttons button {
   border: none;
   background-color: transparent;
@@ -118,6 +122,31 @@ html, body {
 
 .gas-data-buttons button img {
   height: 20px;
+}
+
+.gas-data-buttons button div {
+  position: absolute;
+  opacity: 0;
+  background-color: rgb(110, 110, 110);
+  color: rgb(217, 217, 217);
+  padding: 3px 5px;
+  border-radius: 10px;
+  font-size: 12px;
+  transition: opacity 0.1s;
+}
+
+#copy-tooltip {
+  top: -26px;
+  left: 4px;
+}
+
+#google-tooltip {
+  top: -26px;
+  right: -10px;
+}
+
+.gas-data-buttons button:hover div {
+  opacity: 0.8;
 }
 
 /* end of css for result page */

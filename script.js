@@ -164,8 +164,10 @@ function createCenterMarker(location) {
   const marker = new google.maps.Marker({
       map: map,
       position: location,
-      title: "Your Search Location",
-      icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+      icon: {
+        url: "images/icons/location-blue.png",
+        scaledSize: new google.maps.Size(32, 32),
+      }
   });
   markers.push(marker);
 }

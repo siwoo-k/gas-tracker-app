@@ -1,4 +1,4 @@
-let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker;
+let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker, isAutoComplete;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -19,17 +19,18 @@ async function initMap() {
   rankPreference = SearchNearbyRankPreference;
   infoWindow = new google.maps.InfoWindow();
 
-  document.getElementById('search-bar').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-      getGeocode();
-    }
-  });
-
   const input = document.getElementById('search-bar');
 
   autocomplete = new google.maps.places.Autocomplete(input);
 
   autocomplete.addListener('place_changed', fillInAddress);
+
+  document.getElementById('search-bar').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      document.activeElement.blur(); // prevent auto complete from entering submission again
+      getGeocode();
+    }
+  });
 }
 
 async function fillInAddress() {
@@ -41,8 +42,6 @@ async function fillInAddress() {
 
   getGeocode();
 }
-
-initMap();
 
 async function getGeocode() {
   // clear previous results if any
@@ -175,7 +174,6 @@ function createMarker(place) {
   markers.push(marker);
 }
 
-
 function clearResults() {
   const resultsList = document.getElementById('results-list');
   while (resultsList.firstChild) {
@@ -202,3 +200,5 @@ function createCenterMarker(location) {
   });
   markers.push(marker);
 }
+
+initMap();

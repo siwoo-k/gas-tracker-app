@@ -97,6 +97,29 @@ html, body {
   font-weight: 300;
 }
 
+.gas-data-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gas-data-buttons button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  align-items: center;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+  background-color: white;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin-left: 10px;
+}
+
+.gas-data-buttons button img {
+  height: 20px;
+}
+
 /* end of css for result page */
 
 #results-list {

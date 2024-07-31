@@ -128,20 +128,30 @@ function appendResults(place) {
   const resultsList = document.getElementById('results-list');
   const listItem = document.createElement('li');
 
-  let gasData = `<div class="gas-data"><strong>${place.displayName}</strong><br><span class="gas-address">${place.formattedAddress}</span><br>`
-
-  gasData += `<span class="gas-prices">`;
-
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
-    return `${fuelPrice.type} &#36;${price} ${fuelPrice.price.currencyCode}`;
+    if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      return `REGULAR &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+    }
+    return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
-  gasData += fuelPricesArray.reverse().join('<br>') + `</span>`;
-
-  gasData += `</div>`;
-
-  listItem.innerHTML = gasData;
+  listItem.innerHTML = `<strong>
+                   ${place.displayName}
+                 </strong><br>
+                   <span class="gas-address">
+                 ${place.formattedAddress}
+                   </span><br>
+                 <div class="gas-data-div">
+                 <span class="gas-prices">` + 
+                 fuelPricesArray.reverse().join('<br>') + 
+                 `</span>
+                 <div class="gas-data-buttons">
+                  <button><img src="images/icons/copy.png"></button>
+                  <button><img src="images/icons/open-google.png"></button>
+                 </div>
+                 </div>
+                 </div>`;
 
   listItem.dataset.latitude = place.location.lat();
   listItem.dataset.longitude = place.location.lng();
@@ -244,8 +254,8 @@ function createCenterMarker(location, address) {
       position: location,
       title: "Your location",
       icon: {
-        url: "images/icons/your-location.png",
-        scaledSize: new google.maps.Size(16, 16),
+        url: "images/icons/user-location.png",
+        scaledSize: new google.maps.Size(32, 32),
       },
   });
 

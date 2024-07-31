@@ -6,7 +6,7 @@ html, body {
 }
 
 #map {
-  height: 80%;
+  height: 100%;
 }
 
 #main-nav-bar {
@@ -78,6 +78,8 @@ html, body {
   opacity: 0.7;
 }
 
+/* css for html result page */
+
 .gas-address {
   font-weight: 400;
 }
@@ -90,4 +92,22 @@ html, body {
   margin: 0;
 }
 
-ol li { padding: 8px 0px; }
+/* end of css for result page */
+
+#results-list {
+  background-color: white;
+  padding: 10px 30px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  left: 30px;
+  top: 100px;
+  bottom: 30px;
+  overflow-y: scroll;
+}
+
+#results-list:empty {
+  background-color: transparent;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+#results-list li { padding: 8px 0px; }

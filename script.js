@@ -1,4 +1,8 @@
-let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker, isAutoComplete;
+let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker, isAutoComplete, addresses = [];
+
+let initialRad = 3000;
+let incrementRad = 3000;
+let maxRad = 24000; // approximately 15 miles
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -79,11 +83,10 @@ async function searchGasStations(location) {
              "fuelOptions"],
     locationRestriction: {
       center: location,
-      radius: 3000,
+      radius: initialRad,
     },
     includedPrimaryTypes: ["gas_station"],
-    maxResultCount: 20,
-    rankPreference: rankPreference.DISTANCE,
+    maxResultCount: 15,
     language: "en-US",
   };
 
@@ -92,13 +95,30 @@ async function searchGasStations(location) {
     const results = response.places;
 
     const filteredResults = results.filter(place => 
-      place.fuelOptions && place.fuelOptions.fuelPrices
+      place.fuelOptions && place.fuelOptions.fuelPrices && !addresses.includes(place.formattedAddress)
     );
+
+    if (filteredResults.length === 0) {
+      initialRad += incrementRad;
+      if (initialRad > maxRad) {
+        alert('Maximum search radius reached; try a different location');
+        return;
+      }
+      searchGasStations(location); // recursively call if no new results are returned
+      return;
+    }
     
     for (let place of filteredResults) {
       appendResults(place);
       createMarker(place);
+      addresses.push(place.formattedAddress);
     }
+    const resultsList = document.getElementById('results-list');
+    const showMoreButton = document.createElement('div');
+
+    showMoreButton.innerHTML = `<button id=show-more-button onclick="showMoreResults()">show more</button>`;
+
+    resultsList.appendChild(showMoreButton);
   } catch (error) {
     alert('Places service was unsuccessful: ' + error.message);
   }
@@ -182,6 +202,11 @@ function clearResults() {
   while (resultsList.firstChild) {
     resultsList.removeChild(resultsList.firstChild);
   }
+  while (addresses.firstChild) {
+    addresses.removeChild(addresses.firstChild);
+  }
+  addresses = [];
+  initialRad = 3000; // reset initial radius
 }
 
 function clearMarkers() {
@@ -204,6 +229,23 @@ function createCenterMarker(location, address) {
   });
 
   markers.push(marker);
+}
+
+async function showMoreResults() {
+  const resultsList = document.getElementById('results-list');
+  resultsList.removeChild(resultsList.lastChild); // remove button
+  if (markers.length > 40) {
+    alert('Maximum search result reached; try a different location');
+    return;
+  }
+  
+  initialRad += incrementRad;
+  if (initialRad > maxRad) {
+    alert('Maximum search radius reached; try a different location');
+    return;
+  }
+  const location = markers[0].getPosition(); // get position of center marker
+  searchGasStations(location);
 }
 
 initMap();

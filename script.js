@@ -7,13 +7,12 @@ async function initMap() {
   map = new Map(document.getElementById("map"), {
     center: { lat: 33.649, lng: -117.840 },
     zoom: 16,
-  });
-
-  map.setOptions({
+    disableDefaultUI: true,
+    mapTypeControl: true,
     mapTypeControlOptions: {
-        position: google.maps.ControlPosition.BOTTOM_LEFT
+        position: google.maps.ControlPosition.RIGHT_BOTTOM
     }
-})
+  });
 
   geocoder = new google.maps.Geocoder();
   places = Place;

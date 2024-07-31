@@ -5,12 +5,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" href="style.css"/>
   </head>
   <body>
-    <input id="search-bar" type="text" placeholder="search location here">
-    <button onclick="getGeocode()">Search</button>
     <div id="map"></div>
+
+    <nav id="main-nav-bar">
+      <section id="search-div">
+        <input id="search-bar" type="text" autocomplete="off" placeholder="Put current location">
+      </section>
+      
+      <section id="main-div">
+        <button class="nav-button" onclick="getGeocode()">
+          <img src="images/icons/gas.png">
+          <span style="margin-left: 5px;">Find</span>
+        </button>
+      </section>
+    </nav>
+
+   
     <div id="results"></div>
     <ol id="results-list"></ol>
 

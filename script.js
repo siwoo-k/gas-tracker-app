@@ -9,6 +9,12 @@ async function initMap() {
     zoom: 16,
   });
 
+  map.setOptions({
+    mapTypeControlOptions: {
+        position: google.maps.ControlPosition.BOTTOM_LEFT
+    }
+})
+
   geocoder = new google.maps.Geocoder();
   places = Place;
   rankPreference = SearchNearbyRankPreference;

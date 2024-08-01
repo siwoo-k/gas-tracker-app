@@ -174,10 +174,10 @@ html, body {
 
 .pac-container {
   z-index: 0;
-  background-color: #ffffff;
+  background-color: white;
   color: rgba(0, 0, 0, 0.5);
   border-radius: 20px;
-  margin-top: -45px;
+  margin-top: -28px;
   padding-top: 45px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
 }

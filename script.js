@@ -42,9 +42,6 @@ async function fillInAddress() {
   const place = autocomplete.getPlace();
   const address = place.formatted_address;
 
-  const selectedAddressDiv = document.getElementById('autocomplete-list');
-  selectedAddressDiv.textContent = `Selected Address: ${address}`;
-
   getGeocode();
 }
 
@@ -141,14 +138,14 @@ async function appendResults(place) {
   let response = await getDistanceInfo(place);
 
   if (response != undefined) {
-    distanceInfo = `<span>
-                        ${response[1]} 
-                      </span>
-                      &ensp;
-                      <span style="color: rgb(22, 103, 225);">
-                        ${response[0]} away
-                      </span>
-                      <br>`;      
+    distanceInfo = `<span style="color: rgb(22, 103, 225);">
+                      about ${response[0]} away
+                    </span>
+                    &ensp;
+                    <span>
+                      ${response[1]}
+                    </span>
+                    <br>`;      
   }
 
   listItem.innerHTML = `<strong>

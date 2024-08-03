@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Gas Tracker</title>
+    <title>Find cheap gas near you</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -10,16 +10,10 @@
   <body>
     <div id="map"></div>
 
-    <span style="position: fixed; 
-                 top: 7px; 
-                 left: 49px;
-                 background-color: rgba(255, 255, 255, 0.4);
-                 border-radius: 20px;">
-                 Gas Tracker App
-    </span>
-
     <nav id="main-nav-bar">
-      <input id="search-bar" type="text" autocomplete="off" placeholder="Put current location">
+      <section id="search-div">
+        <input id="search-bar" type="text" autocomplete="off" placeholder="Put current location">
+      </section>
       
       <section id="main-div">
         <button class="nav-button" onclick="getGeocode()">

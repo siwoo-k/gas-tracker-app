@@ -18,6 +18,20 @@ async function initMap() {
     }
   });
 
+  // Center location automatically if given permission
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        map.setCenter(pos);
+      },
+    );
+  }
+
   geocoder = new google.maps.Geocoder();
   places = Place;
   rankPreference = SearchNearbyRankPreference;
@@ -36,6 +50,23 @@ async function initMap() {
       getGeocode();
     }
   });
+}
+
+function getCurrentLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        map.panTo({ lat: pos.lat, lng: pos.lng });
+      },
+      function(error) {
+        alert("Allow location permission to find your address: ", error);
+      }
+    );
+  }
 }
 
 async function fillInAddress() {

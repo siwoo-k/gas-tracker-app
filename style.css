@@ -32,13 +32,13 @@ html, body {
 }
 
 #search-bar {
-  width: 170px;
+  width: 150px;
   text-align: center;
   border: none;
   border-radius: 30px;
   outline: none !important;
   background-color: white;
-  padding: 10px 4px;
+  padding: 10px 10px;
 
   color: black;
   font-size: 15px;

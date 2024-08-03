@@ -69,6 +69,11 @@ function getCurrentLocation() {
   }
 }
 
+function clearInput() {
+  var input = document.getElementById('search-bar');
+  input.value = "";
+}
+
 async function fillInAddress() {
   const place = autocomplete.getPlace();
   const address = place.formatted_address;

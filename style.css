@@ -32,17 +32,20 @@ html, body {
 }
 
 #search-bar {
-  width: 150px;
-  text-align: center;
+  width: 133px;
+ 
   border: none;
   border-radius: 30px;
   outline: none !important;
   background-color: white;
-  padding: 10px 10px;
-
+  padding: 10px 20px;
   color: black;
   font-size: 15px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+#search-bar::placeholder {
+   text-align: left;
 }
 
 .nav-button {

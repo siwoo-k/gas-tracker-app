@@ -12,15 +12,21 @@
 
     <nav id="main-nav-bar">
       <section id="search-div">
-        <input id="search-bar" type="text" autocomplete="off" placeholder="Put current location">
+        <input id="search-bar" type="text" autocomplete="off" placeholder="Put current address">
       </section>
       
-      <section id="main-div">
-        <button class="nav-button" onclick="getGeocode()">
-          <img src="images/icons/gas.png">
-          <span style="margin-left: 5px;">Find</span>
-        </button>
-      </section>
+      <button class="nav-button" onclick="getGeocode()">
+        <img src="images/icons/gas.png">
+        <span style="margin-left: 5px;">Show Gas Station</span>
+      </button>
+      <button class="nav-button">
+        <img src="images/icons/gas.png">
+        <span style="margin-left: 5px;">Find Your Location</span>
+      </button>
+      <button class="nav-button">
+        <img src="images/icons/refresh.png">
+        <span style="margin-left: 5px;">Clear Results</span>
+      </button>
     </nav>
 
     <div id="autocomplete-list"></div>

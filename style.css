@@ -9,52 +9,49 @@ html, body {
   height: 100%;
 }
 
+#crosshair {
+  position: fixed;
+  height: 18px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 #main-nav-bar {
-  height: 60px;
-  width: 320px;
+  width: 700px;
   position: fixed;
   top: 30px;
   left: 50%;
   transform: translate(-50%, 0);
-  background-color: red;
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 
   z-index: 1;
 }
 
 #search-bar {
-  height: 60px;
-  width: 140px;
-  padding-left: 20px;
-  padding-right: 10px;
+  width: 170px;
+  text-align: center;
   border: none;
   border-radius: 30px;
   outline: none !important;
   background-color: white;
+  padding: 10px 4px;
 
   color: black;
-  font-size: 16px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
-}
-
-#main-div {
-  width: 150px;
-  border-radius: 30px;
-
-  display: flex;
-  align-items: center;
+  font-size: 15px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
 .nav-button {
-  font-size: 16px;
+  font-size: 14px;
   color: rgba(0, 0, 0, 0.5);
   background-color: white;
   border: none;
   border-radius: 20px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 
   padding: 10px 14px;
   display: flex;

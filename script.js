@@ -52,7 +52,7 @@ async function initMap() {
   });
 }
 
-function getCurrentLocation() {
+async function getCurrentLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(position) {

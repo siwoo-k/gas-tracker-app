@@ -14,20 +14,20 @@
 
     <nav id="main-nav-bar">
       <section id="search-div">
+        <button class="nav-button" onclick="getCurrentLocation();">
+          <img src="images/icons/user.png">
+          <span style="margin-left: 5px;">Find Me</span>
+        </button>
         <input id="search-bar" type="text" autocomplete="off" placeholder="Put current address">
       </section>
       
       <button class="nav-button" onclick="getGeocode();">
         <img src="images/icons/gas.png">
-        <span style="margin-left: 5px;">Show Gas Station</span>
+        <span style="margin-left: 5px;">Show Prices</span>
       </button>
-      <button class="nav-button">
-        <img src="images/icons/user.png">
-        <span style="margin-left: 5px;" onclick="getCurrentLocation();">Find Your Location</span>
-      </button>
-      <button class="nav-button">
+      <button class="nav-button" onclick="clearResults(); clearMarkers(); clearInput();">
         <img src="images/icons/refresh.png">
-        <span style="margin-left: 5px;" onclick="clearResults(); clearMarkers(); clearInput();">Clear Results</span>
+        <span style="margin-left: 5px;">Clear Search</span>
       </button>
     </nav>
 

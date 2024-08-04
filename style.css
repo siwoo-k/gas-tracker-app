@@ -50,10 +50,11 @@ html, body {
   padding: 10px 20px;
   color: black;
   font-size: 15px;
+  transition: color 0.3s;
 }
 
-#search-bar:hover ::placeholder {
-   color: black;
+#search-bar:hover::placeholder {
+   color: rgba(0, 0, 0, 0.7);
 }
 
 #search-div .nav-button {
@@ -163,12 +164,17 @@ html, body {
   background-color: white;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
   position: absolute;
-  left: 30px;
-  top: 100px;
-  max-height: 550px;
+  margin: 0;
+  left: 0;
+  top: 0;
+  max-height: 100%;
   padding: 0;
   overflow-y: scroll;
   list-style-position: inside;
+}
+
+#results-list::-webkit-scrollbar {
+  width: 0;
 }
 
 #results-list:empty {

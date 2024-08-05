@@ -36,17 +36,17 @@ html, body {
   background-color: white;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   border-radius: 140px;
-  width: 280px;
+  width: 260px;
   justify-content: space-between;
 }
 
 #search-bar {
-  width: 133px;
+  background-color: white;
+  width: 108px;
  
   border: none;
   border-radius: 30px;
   outline: none !important;
-  background-color: white;
   padding: 10px 20px;
   color: black;
   font-size: 15px;
@@ -101,6 +101,7 @@ html, body {
 }
 
 .gas-address {
+  font-size: 14px;
   font-weight: 400;
 }
 
@@ -109,6 +110,7 @@ html, body {
 }
 
 .gas-data-div {
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -170,7 +172,7 @@ html, body {
   max-height: 100%;
   padding: 0;
   overflow-y: scroll;
-  list-style-position: inside;
+  list-style-type: none;
 }
 
 #results-list::-webkit-scrollbar {

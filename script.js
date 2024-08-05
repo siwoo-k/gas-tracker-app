@@ -175,11 +175,7 @@ async function appendResults(place) {
 
   if (response != undefined) {
     distanceInfo = `<span style="color: rgb(22, 103, 225);">
-                      about ${response[0]} away
-                    </span>
-                    &ensp;
-                    <span>
-                      ${response[1]}
+                      ${response[0]} miles away
                     </span>
                     <br>`;      
   }
@@ -187,7 +183,6 @@ async function appendResults(place) {
   listItem.innerHTML = `<strong>
                           ${place.displayName}
                         </strong><br>
-                        ${distanceInfo}
                         <span class="gas-address">
                           ${place.formattedAddress}
                         </span><br>
@@ -200,6 +195,9 @@ async function appendResults(place) {
                             <button><img src="images/icons/open-google.png"><div id="google-tooltip">open map</div></button>
                           </div>
                         </div>
+                        <span style="font-size: 14px;";>
+                          ${distanceInfo}
+                        </span>
                         </div>`;
 
   listItem.dataset.latitude = place.location.lat();
@@ -253,10 +251,9 @@ async function getDistanceInfo(place) {
       });
     });
     const results = response.rows[0].elements[0];
-    const duration = results.duration.text;
     const distance = results.distance.text;
 
-    return [duration, distance];
+    return distance;
   } catch (error) {
     // do nothing here
   }

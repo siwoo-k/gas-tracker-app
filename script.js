@@ -165,37 +165,36 @@ async function appendResults(place) {
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
-      return `REGULAR &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+      return `REGULAR <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
     }
-    return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+    return `${fuelPrice.type} <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
   let distanceInfo = "";
   let response = await getDistanceInfo(place);
 
   if (response != undefined) {
-    distanceInfo = `<span style="color: rgb(22, 103, 225);">
+    distanceInfo = `<span class="distance-info">
                       ${response[0]} miles away
+                      <span class="hidden-info">
+                        ${response[1]}
+                      </span>
                     </span>
                     <br>`;      
   }
+  let fuelPrices = fuelPricesArray.reverse().map(price => `<span>${price}</span>`).join('');
 
-  listItem.innerHTML = `<strong>
+  listItem.innerHTML = `<span style="font-weight: 500;">
                           ${place.displayName}
-                        </strong><br>
+                        </span>
+                        <br>
                         <span class="gas-address">
                           ${place.formattedAddress}
                         </span><br>
                         <div class="gas-data-div">
-                          <span class="gas-prices">` + 
-                            fuelPricesArray.reverse().join('<br>') + 
-                          `</span>
-                          <div class="gas-data-buttons">
-                            <button><img src="images/icons/copy.png"><div id="copy-tooltip">copy url</div></button>
-                            <button><img src="images/icons/open-google.png"><div id="google-tooltip">open map</div></button>
-                          </div>
+                          ${fuelPrices}
                         </div>
-                        <span style="font-size: 14px;";>
+                        <span style="font-size: 14px; font-weight: 400;";>
                           ${distanceInfo}
                         </span>
                         </div>`;
@@ -252,8 +251,9 @@ async function getDistanceInfo(place) {
     });
     const results = response.rows[0].elements[0];
     const distance = results.distance.text;
+    const duration = results.duration.text;
 
-    return distance;
+    return [distance, duration];
   } catch (error) {
     // do nothing here
   }
@@ -297,6 +297,20 @@ function createMarker(place) {
 
   google.maps.event.addListener(marker, 'mouseout', function() {
     infoWindow.close();
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    const listItem = document.querySelector(`li[data-latitude="${place.location.lat()}"][data-longitude="${place.location.lng()}"]`);
+    if (listItem) {
+      // Remove highlight from previously highlighted item
+      const previouslyHighlighted = document.querySelector('.highlighted');
+      if (previouslyHighlighted) {
+        previouslyHighlighted.classList.remove('highlighted');
+      }
+      // Highlight the clicked item
+      listItem.classList.add('highlighted');
+      listItem.scrollIntoView({ behavior: "smooth", block: "center" }); // scroll to the item
+    }
   });
 
   markers.push(marker);

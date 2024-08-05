@@ -49,7 +49,7 @@ html, body {
   outline: none !important;
   padding: 10px 20px;
   color: black;
-  font-size: 15px;
+  font-size: 14px;
   transition: color 0.3s;
 }
 
@@ -110,10 +110,15 @@ html, body {
 }
 
 .gas-data-div {
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 20px;
+  width: auto;
+  column-gap: 15px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .gas-data-buttons {
@@ -160,6 +165,22 @@ html, body {
   opacity: 0.8;
 }
 
+.distance-info {
+  position: relative;
+}
+
+.hidden-info {
+  color: rgb(49, 135, 255);
+  opacity: 0;
+  margin-left: -5px;
+  transition: opacity 0.5s, margin-left 0.5s;
+}
+
+.distance-info:hover .hidden-info {
+  opacity: 1;
+  margin-left: 5px;
+}
+
 /* end of css for result page */
 
 #results-list {
@@ -193,6 +214,8 @@ html, body {
 }
 
 .pac-container {
+  position: fixed !important;
+  width: 260px !important;
   z-index: 0;
   background-color: white;
   color: rgba(0, 0, 0, 0.5);
@@ -228,4 +251,8 @@ html, body {
 
 #show-more-button img {
   height: 20px;
+}
+
+.highlighted {
+  background-color: #97fda3;
 }

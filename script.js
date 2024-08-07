@@ -302,14 +302,7 @@ function createMarker(place) {
   google.maps.event.addListener(marker, 'click', function() {
     const listItem = document.querySelector(`li[data-latitude="${place.location.lat()}"][data-longitude="${place.location.lng()}"]`);
     if (listItem) {
-      // Remove highlight from previously highlighted item
-      const previouslyHighlighted = document.querySelector('.highlighted');
-      if (previouslyHighlighted) {
-        previouslyHighlighted.classList.remove('highlighted');
-      }
-      // Highlight the clicked item
-      listItem.classList.add('highlighted');
-      listItem.scrollIntoView({ behavior: "smooth", block: "center" }); // scroll to the item
+      listItem.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   });
 

@@ -1,8 +1,8 @@
 let map, geocoder, places, rankPreference, infoWindow, markers = [], autocomplete, lastMarker, isAutoComplete, addresses = [], distanceMatrix;
 
-let initialRad = 3000;
-let incrementRad = 3000;
-let maxRad = 24000; // approximately 15 miles
+let initialRad = 3220; // approximately 2 miles
+let incrementRad = 3220;
+let maxRad = 16090; // approximately 10 miles
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -120,7 +120,7 @@ async function searchGasStations(location) {
       radius: initialRad,
     },
     includedPrimaryTypes: ["gas_station"],
-    maxResultCount: 15,
+    maxResultCount: 20,
     language: "en-US",
   };
 
@@ -147,12 +147,7 @@ async function searchGasStations(location) {
       createMarker(place);
       addresses.push(place.formattedAddress);
     }
-    const resultsList = document.getElementById('results-list');
-    const showMoreButton = document.createElement('div');
 
-    showMoreButton.innerHTML = `<button id=show-more-button onclick="showMoreResults()"><img src="images/icons/show-more.png"> Show more</button>`;
-
-    resultsList.appendChild(showMoreButton);
   } catch (error) {
     alert('Places service was unsuccessful: ' + error.message);
   }

@@ -144,7 +144,6 @@ async function searchGasStations(location) {
     
     for (let place of filteredResults) {
       await appendResults(place);
-      createMarker(place);
       addresses.push(place.formattedAddress);
     }
 
@@ -168,7 +167,10 @@ async function appendResults(place) {
   let distanceInfo = "";
   let response = await getDistanceInfo(place);
 
-  if (response != undefined) {
+  if (response !== undefined) {
+    if (parseFloat(response[0]) > 2 * 1.15) {
+      return; // dont append current data since it's more than 2 miles
+    }
     distanceInfo = `<span class="distance-info">
                       ${response[0]} miles away
                       <span class="hidden-info">
@@ -224,6 +226,7 @@ async function appendResults(place) {
   });
 
   resultsList.appendChild(listItem);
+  createMarker(place); // add markers here
 }
 
 async function getDistanceInfo(place) {

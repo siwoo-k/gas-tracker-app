@@ -5,7 +5,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"/>
+    
+    <link rel="stylesheet" href="styles/important.css"/>
+    <link rel="stylesheet" href="styles/nav-button.css"/>
+    <link rel="stylesheet" href="styles/results.css"/>
+    <link rel="stylesheet" href="styles/script.css"/>
+    <link rel="stylesheet" href="styles/search-bar.css"/>
   </head>
   <body>
     <div id="map"></div>
@@ -13,18 +18,26 @@
     <img id="crosshair" src="images/icons/crosshair.png">
 
     <nav id="main-nav-bar">
+
+      <!-- search bar -->
       <section id="search-div">
         <input id="search-bar" type="text" autocomplete="off" placeholder="Search address">
+
+        <!-- find your location button -->
         <button class="nav-button" onclick="getCurrentLocation();">
           <img src="images/icons/user.png">
           <span style="margin-left: 5px;">Find Me</span>
         </button>
+
       </section>
       
+      <!-- show gas button -->
       <button class="nav-button" onclick="getGeocode();">
         <img src="images/icons/gas.png">
         <span style="margin-left: 5px;">Show Prices</span>
       </button>
+
+      <!-- clear results button -->
       <button class="nav-button" onclick="clearResults(); clearMarkers(); clearInput();">
         <img src="images/icons/refresh.png">
         <span style="margin-left: 5px;">Clear Search</span>

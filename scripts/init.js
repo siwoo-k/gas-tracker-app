@@ -10,7 +10,7 @@ async function initMap() {
   places = Place;
 
   map = new Map(document.getElementById("map"), {
-    center: { lat: 33.649, lng: -117.840 },
+    center: { lat: 0, lng: 0 },
     zoom: 16,
     disableDefaultUI: true,
     mapTypeControl: true,
@@ -140,10 +140,10 @@ async function showGasStations(location) {
 }
 
 async function appendResults(place) {
-  const resultsList = document.getElementById('results-list');
-  const listItem = document.createElement('li');
+  const results = document.getElementById('results-list');
+  const gasitem = document.createElement('li');
 
-  const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
+  const fueldata = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
       return `REGULAR <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
@@ -151,14 +151,14 @@ async function appendResults(place) {
     return `${fuelPrice.type} <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
-  let distanceInfo = "";
+  let distanceinfo = "";
   let response = await getDistanceInfo(place);
 
   if (response !== undefined) {
     if (parseFloat(response[0]) > 2 * 1.15) {
       return; // dont append current data since it's more than 2 miles
     }
-    distanceInfo = `<span class="distance-info">
+    distanceinfo = `<span class="distance-info">
                       ${response[0]} miles away
                       <span class="hidden-info">
                         ${response[1]}
@@ -166,9 +166,9 @@ async function appendResults(place) {
                     </span>
                     <br>`;      
   }
-  let fuelPrices = fuelPricesArray.reverse().map(price => `<span>${price}</span>`).join('');
+  let fuelordered = fueldata.reverse().map(price => `<span>${price}</span>`).join('');
 
-  listItem.innerHTML = `<span style="font-weight: 500;">
+  gasitem.innerHTML = `<span style="font-weight: 500;">
                           ${place.displayName}
                         </span>
                         <br>
@@ -176,18 +176,18 @@ async function appendResults(place) {
                           ${place.formattedAddress}
                         </span><br>
                         <div class="gas-data-div">
-                          ${fuelPrices}
+                          ${fuelordered}
                         </div>
                         <span style="font-size: 14px; font-weight: 400;";>
-                          ${distanceInfo}
+                          ${distanceinfo}
                         </span>
                         </div>`;
 
-  listItem.dataset.latitude = place.location.lat();
-  listItem.dataset.longitude = place.location.lng();
-  listItem.dataset.markerIndex = markers.length;
+  gasitem.dataset.latitude = place.location.lat();
+  gasitem.dataset.longitude = place.location.lng();
+  gasitem.dataset.markerIndex = markers.length;
 
-  listItem.addEventListener('click', function() {
+  gasitem.addEventListener('click', function() {
     const lat = parseFloat(this.dataset.latitude);
     const lng = parseFloat(this.dataset.longitude);
     map.panTo({ lat: lat, lng: lng });
@@ -200,8 +200,8 @@ async function appendResults(place) {
     }
 
     for (let i = 0; i < markers.length; i++) {
-      const markerPosition = markers[i].getPosition();
-      if (markerPosition.lat() === lat && markerPosition.lng() === lng) {
+      const markerpos = markers[i].getPosition();
+      if (markerpos.lat() === lat && markerpos.lng() === lng) {
         index = i;
         markers[i].setIcon({
           url: "images/icons/marker.png",
@@ -212,7 +212,7 @@ async function appendResults(place) {
     }
   });
 
-  resultsList.appendChild(listItem);
+  results.appendChild(gasitem);
   createMarker(place); // add markers here
 }
 
@@ -288,6 +288,25 @@ function createMarker(place) {
     const gasitem = document.querySelector(`li[data-latitude="${place.location.lat()}"][data-longitude="${place.location.lng()}"]`);
     if (gasitem) {
       gasitem.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    if (index != null && index <= markers.length - 1) {
+      markers[index].setIcon({
+        url: "images/icons/marker.png",
+        scaledSize: new google.maps.Size(32, 32),
+      });
+    }
+
+    for (let i = 0; i < markers.length; i++) {
+      const markerpos = markers[i].getPosition();
+      if (markerpos.lat() === place.location.lat() && markerpos.lng() === place.location.lng()) {
+        index = i;
+        markers[i].setIcon({
+          url: "images/icons/marker.png",
+          scaledSize: new google.maps.Size(48, 48), 
+        });
+        break;
+      }
     }
   });
 

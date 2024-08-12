@@ -52,12 +52,14 @@
 
 .gas-data-div {
   column-gap: 15px;
-  display: flex;
+  display: grid;
   font-size: 13px;
+  grid-template-columns: 65px 65px 65px 65px;
   justify-content: left;
   line-height: 20px;
   margin-bottom: 10px;
   margin-top: 10px;
+  row-gap: 10px;
   width: auto;
 }
 

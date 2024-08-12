@@ -28,7 +28,7 @@ html, body {
   position: fixed;
   top: 30px;
   transform: translate(-50%, 0);
-  width: 600px;
+  width: 720px; /* change width to resize gap between elements */
   z-index: 1;
 }
 

@@ -1,3 +1,6 @@
+/* ======================
+    Results Page Styles 
+  ======================= */
 #results-list {
   background-color: white;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
@@ -5,8 +8,8 @@
   list-style-type: none;
   margin: 0;
   max-height: 100%;
-  max-width: 350px;
-  min-width: 350px;
+  max-width: 390px;
+  min-width: 390px;
   overflow-y: scroll;
   padding: 0;
   position: absolute;

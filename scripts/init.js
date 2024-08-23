@@ -68,7 +68,7 @@ async function initNavigationActions() {
   document.getElementById('search-bar').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
       document.activeElement.blur();
-      getGeocode();
+      document.getElementById('show-gas-button').style.opacity = 1;
     }
   });
 

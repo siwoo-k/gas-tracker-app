@@ -19,6 +19,14 @@ async function initMap() {
     }
   });
 
+  google.maps.event.addListener(map, "zoom_changed", function() {
+    document.getElementById('show-gas-button').style.opacity = 1;
+  });
+
+  google.maps.event.addListener(map, "dragend", function() {
+    document.getElementById('show-gas-button').style.opacity = 1;
+  });
+
   initNavigationActions();
   centerOnUser();
 }
@@ -45,7 +53,16 @@ async function initNavigationActions() {
   let autocomplete = new google.maps.places.Autocomplete(input);
 
   autocomplete.addListener('place_changed', () => {
-    getGeocode();
+    const address = document.getElementById('search-bar').value.trim();
+    geocoder.geocode({ 'address': address }, function(results, status) {
+      if (status === 'OK') {
+        const location = results[0].geometry.location;
+        map.setCenter(location);
+      } else {
+        alert('Geocoder was unsucessful: ' + status);
+      }
+    });
+    document.getElementById('show-gas-button').style.opacity = 1;
   });
 
   document.getElementById('search-bar').addEventListener('keydown', function(event) {
@@ -57,16 +74,19 @@ async function initNavigationActions() {
 
   document.getElementById('find-me-button').addEventListener('click', () => {
     centerOnUser();
+    document.getElementById('show-gas-button').style.opacity = 1;
   });
 
-  document.getElementById('show-gas-button').addEventListener('click', () => {
+  document.getElementById('show-gas-button').addEventListener('click', function() {
     getGeocode();
+    this.style.opacity = 0; // hide button after results
   });
 
   document.getElementById('clear-result-button').addEventListener('click', () => {
     clearInput();
     clearResults();
     clearMarkers();
+    document.getElementById('show-gas-button').style.opacity = 0;
   });
 }
 

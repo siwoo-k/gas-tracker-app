@@ -26,9 +26,10 @@ html, body {
   justify-content: space-evenly;
   left: 50%;
   position: fixed;
+  row-gap: 20px;
   top: 30px;
   transform: translate(-50%, 0);
-  width: 720px; /* change width to resize gap between elements */
+  width: 440px; /* change width to resize gap between elements */
   z-index: 1;
 }
 
@@ -92,6 +93,14 @@ html, body {
 
 .nav-button:hover img {
   opacity: 0.7;
+}
+
+#show-gas-button {
+  top: 90px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  position: fixed;
+  opacity: 0; /* start from invisible */
 }
   
 

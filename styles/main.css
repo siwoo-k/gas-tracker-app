@@ -22,14 +22,13 @@ html, body {
 
 #main-nav-bar {
   align-items: center;
+  column-gap: 10px;
   display: flex;
   justify-content: space-evenly;
   left: 50%;
   position: fixed;
-  row-gap: 20px;
   top: 30px;
   transform: translate(-50%, 0);
-  width: 440px; /* change width to resize gap between elements */
   z-index: 1;
 }
 
@@ -41,7 +40,7 @@ html, body {
     border-radius: 20px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
     color: rgba(0, 0, 0, 0.5);
-    margin-top: -28px;
+    margin-top: -38.5px;
     padding-top: 45px;
     position: fixed !important;
     width: 260px !important;
@@ -102,28 +101,37 @@ html, body {
   position: fixed;
   opacity: 0; /* start from invisible */
 }
+
+#find-me-button {
+  position: absolute;
+  right: 0;
+}
   
 
 /* ====================
     Search Bar Styles 
   ===================== */
 #search-div {
+  position: relative;
   display: flex;
   background-color: white;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
   border-radius: 140px;
-  width: 260px;
+  width: 220px;
   justify-content: space-between;
+  align-items: center;
 }
 
 #search-bar {
+  flex: 1;
   background-color: white;
-  width: 108px;
+  width: 220px;
   
   border: none;
   border-radius: 30px;
   outline: none !important;
-  padding: 10px 20px;
+  padding: 11px 20px;
+  display: absolute;
   color: black;
   font-size: 14px;
   transition: color 0.3s;

@@ -68,6 +68,15 @@ async function initNavigationActions() {
   document.getElementById('search-bar').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
       document.activeElement.blur();
+      const address = document.getElementById('search-bar').value.trim();
+      geocoder.geocode({ 'address': address }, function(results, status) {
+        if (status === 'OK') {
+          const location = results[0].geometry.location;
+          map.setCenter(location);
+        } else {
+          alert('Geocoder was unsucessful: ' + status);
+        }
+      });
       document.getElementById('show-gas-button').style.opacity = 1;
     }
   });

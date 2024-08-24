@@ -6,6 +6,28 @@
   position: relative;
 }
 
+.gas-item-div {
+  background-color: red;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gas-item-button button {
+  border: none;
+  height: 30px;
+  width: 30px;
+  border-radius: 30px;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.gas-item-button img {
+  height: 16px;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
 .gas-address {
   font-size: 14px;
   font-weight: 400;

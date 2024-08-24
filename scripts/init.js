@@ -256,21 +256,33 @@ async function appendResults(place) {
   }
   let fuelordered = fueldata.reverse().map(price => `<span>${price}</span>`).join('');
 
-  gasitem.innerHTML = `<span style="font-weight: 500;">
-                          ${place.displayName}
-                        </span>
-                        <br>
-                        <span class="gas-address">
-                          ${place.formattedAddress.split(',')[0]}
-                        </span><br>
-                        <span style="color: orange; font-size: 12px; margin: 0; margin-bottom: -10px;">credit prices</span><br>
-                        <div class="gas-data-div">
-                          ${fuelordered}
+  gasitem.innerHTML = `<div class="gas-item-div">
+                        <div>
+                          <span style="font-weight: 500;">
+                            ${place.displayName}
+                          </span>
+                          <br>
+                          <span class="gas-address">
+                            ${place.formattedAddress.split(',')[0]}
+                          </span><br>
                         </div>
-                        <span style="font-size: 14px; font-weight: 400;";>
-                          ${distanceinfo}
-                        </span>
-                        </div>`;
+                        <div class="gas-item-button">
+                          <button>
+                            <img src="images/icons/user.png">
+                          </button>
+                          <button>
+                            <img src="images/icons/user.png">
+                          </button>
+                        </div>
+                      </div>
+                      <span style="color: orange; font-size: 12px; margin: 0; margin-bottom: -10px;">credit prices</span><br>
+                      <div class="gas-data-div">
+                        ${fuelordered}
+                      </div>
+                      <span style="font-size: 14px; font-weight: 400;";>
+                        ${distanceinfo}
+                      </span>
+                      </div>`;
 
   gasitem.querySelector('.gas-address').addEventListener('click', function() {
     navigator.clipboard.writeText(place.formattedAddress)

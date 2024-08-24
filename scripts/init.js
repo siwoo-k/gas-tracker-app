@@ -20,11 +20,11 @@ async function initMap() {
   });
 
   google.maps.event.addListener(map, "zoom_changed", function() {
-    document.getElementById('show-gas-button').style.opacity = 1;
+    document.getElementById('show-gas-button').style.display = "flex";
   });
 
   google.maps.event.addListener(map, "dragend", function() {
-    document.getElementById('show-gas-button').style.opacity = 1;
+    document.getElementById('show-gas-button').style.display = "flex";
   });
 
   initNavigationActions();
@@ -62,7 +62,7 @@ async function initNavigationActions() {
         alert('Geocoder was unsucessful: ' + status);
       }
     });
-    document.getElementById('show-gas-button').style.opacity = 1;
+    document.getElementById('show-gas-button').style.display = "flex";
   });
 
   document.getElementById('search-bar').addEventListener('keydown', function(event) {
@@ -77,25 +77,30 @@ async function initNavigationActions() {
           alert('Geocoder was unsucessful: ' + status);
         }
       });
-      document.getElementById('show-gas-button').style.opacity = 1;
+      document.getElementById('show-gas-button').style.display = "flex";
     }
   });
 
   document.getElementById('find-me-button').addEventListener('click', () => {
     centerOnUser();
-    document.getElementById('show-gas-button').style.opacity = 1;
+    document.getElementById('show-gas-button').style.display = "flex";
   });
 
   document.getElementById('show-gas-button').addEventListener('click', function() {
     getGeocode();
-    this.style.opacity = 0; // hide button after results
+    this.style.display = "none"; // hide button after results
   });
 
   document.getElementById('clear-result-button').addEventListener('click', () => {
     clearInput();
     clearResults();
     clearMarkers();
-    document.getElementById('show-gas-button').style.opacity = 0;
+    document.getElementById('show-gas-button').style.display = "none";
+    document.getElementById('results-list').style.display = "none";
+  });
+
+  document.getElementById('toggle-results-button').addEventListener('click', function() {
+    document.getElementById('results-list').classList.toggle('collapse');
   });
 }
 
@@ -202,8 +207,9 @@ async function appendResults(place) {
                         </span>
                         <br>
                         <span class="gas-address">
-                          ${place.formattedAddress}
+                          ${place.formattedAddress.split(',')[0]}
                         </span><br>
+                        <span style="color: orange; font-size: 12px; margin: 0; margin-bottom: -10px;">credit prices</span><br>
                         <div class="gas-data-div">
                           ${fuelordered}
                         </div>
@@ -240,8 +246,9 @@ async function appendResults(place) {
       }
     }
   });
-
+  
   results.appendChild(gasitem);
+  results.style.display = "block";
   createMarker(place); // add markers here
 }
 
@@ -344,6 +351,9 @@ function createMarker(place) {
 
 function clearResults() {
   const results = document.getElementById('results-list');
+  if (results.classList.contains('collapse')) {
+    results.classList.remove('collapse');
+  }
   while (results.firstChild) {
     results.removeChild(results.firstChild);
   }

@@ -2,6 +2,7 @@
     This CSS file modifies the html elements created by the script
   ------------------------------------------------------------------ */
 .distance-info {
+  font-size: 14px;
   position: relative;
 }
 

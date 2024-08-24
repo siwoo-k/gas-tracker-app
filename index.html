@@ -72,9 +72,15 @@
         </div>
       </div>
 
-      <button id="set-range-button" class="side-bar-button">
-        Set Range
-      </button>
+      <div class="dropdown">
+        <button id="set-range-button" class="side-bar-button">
+          Set Range
+        </button>
+        <div id="range-options">
+          <input id="range-slider" type="range"  min="1" max="6" value="2" step="1">
+          <span id="range-value">2</span>
+        </div>
+      </div>
 
       <button id="calculator-button" class="side-bar-button">
         Gas Calculator

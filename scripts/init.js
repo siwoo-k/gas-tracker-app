@@ -1,5 +1,10 @@
 let map, places, geocoder, infowindow, distancematrix, markers = [], index;
 
+
+let size = 3220; // approximately 2 miles
+const increaseSize = 1660, maxSize = 16601; // approximately 10 miles
+
+
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
   const { Place } = await google.maps.importLibrary("places");
@@ -127,10 +132,16 @@ async function initNavigationActions() {
     document.getElementById('distances-sort').classList.toggle('active');
     sortBy(3);
   });
-}
 
-let size = 3220; // approximately 2 miles
-const increaseSize = 3320, maxSize = 16090; // approximately 10 miles
+  document.getElementById('range-slider').addEventListener('input', function() {
+    document.getElementById('range-value').textContent = document.getElementById('range-slider').value;
+    increaseRange(document.getElementById('range-slider').value);
+  });
+
+  document.getElementById('set-range-button').addEventListener('click', function() {
+    document.getElementById('range-options').classList.toggle('collapse');
+  });
+}
 
 async function getGeocode() {
   clearResults();
@@ -159,6 +170,7 @@ async function transformAddress(address) {
 }
 
 async function showGasStations(location) {
+  console.log(size);
   const request = {
     fields: ["displayName", 
              "location", 
@@ -192,6 +204,7 @@ async function showGasStations(location) {
       await appendResults(place);
       // addresses.push(place.formattedAddress);
     }
+    sortBy(2);
 
   } catch (error) {
     alert('Places service was unsuccessful: ' + error.message);
@@ -215,8 +228,8 @@ async function appendResults(place) {
   let response = await getDistanceInfo(place);
 
   if (response !== undefined) {
-    if (parseFloat(response[0]) > 2 * 1.15) {
-      return; // dont append current data since it's more than 2 miles
+    if (parseFloat(response[0]) > (size / increaseSize) * 1.15) {
+      return;
     }
     distanceinfo = `<span class="distance-info">
                       ${response[0]} miles away
@@ -380,11 +393,11 @@ function createMarker(place) {
 function clearResults() {
   const results = document.getElementById('results-list');
   results.classList.remove('collapse');
+  document.getElementById('range-options').classList.remove('collapse');
   document.getElementById('sort-options').classList.remove('collapse');
   while (results.firstChild) {
     results.removeChild(results.firstChild);
   }
-  size = increaseSize; // reset initial radius
 }
 
 function clearMarkers() {
@@ -408,11 +421,17 @@ async function sortBy(rule) {
       // Sort by efficiency (you would define what this means)
       const maxPrice = Math.max(...itemsArray.map(item => parseFloat(item.dataset.cost)));
       const maxDistance = Math.max(...itemsArray.map(item => parseFloat(item.dataset.distance)))
-
+      
       itemsArray.sort((a, b) => {
-        const scoreA = getEfficiencyScore(parseFloat(a.dataset.cost), parseFloat(a.dataset.distance), maxPrice, maxDistance);
-        const scoreB = getEfficiencyScore(parseFloat(b.dataset.cost), parseFloat(b.dataset.distance), maxPrice, maxDistance);
-        return scoreA - scoreB;
+        let pricediffA = maxPrice - parseFloat(a.dataset.cost);
+        let pricediffB = maxPrice - parseFloat(b.dataset.cost);
+
+        let distancediffA = maxDistance - parseFloat(a.dataset.distance);
+        let distancediffB = maxDistance - parseFloat(b.dataset.distance);
+
+        const scoreA = pricediffA + distancediffA * 0.3;
+        const scoreB = pricediffB + distancediffB * 0.3;
+        return scoreB - scoreA;
       });
   } else if (rule === 2) {
       // Sort by prices
@@ -435,11 +454,8 @@ async function sortBy(rule) {
   });
 }
 
-function getEfficiencyScore(cost, distance, maxPrice, maxDistance, priceWeight = 0.8, distanceWeight = 0.2) {
-  const normalizedCost = cost / maxPrice;
-  const normalizedDistance = distance / maxDistance;
-  const efficiencyScore = (normalizedCost * priceWeight) + (normalizedDistance * distanceWeight);
-  return efficiencyScore;
+async function increaseRange(value) {
+  size = value * increaseSize;
 }
 
 initMap();

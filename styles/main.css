@@ -6,6 +6,8 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  touch-action: none;
+  -webkit-text-size-adjust: 100%;
 }
 
 #side-bar {
@@ -62,7 +64,7 @@ html, body {
     margin-top: -38.5px;
     padding-top: 45px;
     position: fixed !important;
-    width: 220px !important;
+    width: 300px !important;
     z-index: 0;
   }
 
@@ -94,7 +96,7 @@ html, body {
   cursor: pointer;
   display: flex;
   font-size: 14px;
-  padding: 10px 14px;
+  padding: 10px 10px;
   transition: color 0.3s;
 }
 
@@ -120,6 +122,14 @@ html, body {
   position: absolute;
   display: none; /* start from invisible */
 }
+
+#clear-result-button {
+  margin-right: 4px;
+}
+
+#show-options-button {
+  display: none;
+}
   
 
 /* ====================
@@ -134,6 +144,7 @@ html, body {
   width: 300px;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
 }
 
 #search-bar {
@@ -224,4 +235,44 @@ html, body {
 
 #range-options.collapse {
   display: flex;
+}
+
+@media (max-width: 600px) {
+  #side-bar {
+    display: none;
+  }
+
+  #main-ui {
+    margin: 0;
+  }
+
+  #main-nav-bar {
+    left: 50%;
+    transform: translate(-50%, 0);
+    height: 50px;
+    width: 300px; 
+  }
+
+  #show-options-button {
+    display: flex;
+  }  
+}
+
+@media (max-width: 360px) {
+  #show-gas-button span {
+    display: none;
+  }
+}
+
+@media (max-width: 325px) {
+  #search-div button {
+    display: none;
+  }
+
+  #main-nav-bar {
+    transform: none;
+    left: 15px;
+    right: 15px;
+    width: auto;
+  }
 }

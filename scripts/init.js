@@ -26,14 +26,10 @@ async function initMap() {
     center: { lat: 0, lng: 0 },
     zoom: 16,
     disableDefaultUI: true,
-    mapTypeControl: true,
     zoomControl: true,
     zoomControlOptions: {
         position: google.maps.ControlPosition.RIGHT_BOTTOM 
     },
-    mapTypeControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_TOP 
-    }
   });
 
   google.maps.event.addListener(map, "zoom_changed", function() {

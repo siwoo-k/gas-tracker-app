@@ -102,6 +102,31 @@ async function initNavigationActions() {
   document.getElementById('toggle-results-button').addEventListener('click', function() {
     document.getElementById('results-list').classList.toggle('collapse');
   });
+
+  document.getElementById('sort-results-button').addEventListener('click', function() {
+    document.getElementById('sort-options').classList.toggle('collapse');
+  });
+
+  document.getElementById('efficient-sort').addEventListener('click', function() {
+    document.getElementById('efficient-sort').classList.toggle('active');
+    document.getElementById('prices-sort').classList.remove('active');
+    document.getElementById('distances-sort').classList.remove('active');
+    sortBy(1);
+  });
+
+  document.getElementById('prices-sort').addEventListener('click', function() {
+    document.getElementById('efficient-sort').classList.remove('active');
+    document.getElementById('prices-sort').classList.toggle('active');
+    document.getElementById('distances-sort').classList.remove('active');
+    sortBy(2);
+  });
+
+  document.getElementById('distances-sort').addEventListener('click', function() {
+    document.getElementById('efficient-sort').classList.remove('active');
+    document.getElementById('prices-sort').classList.remove('active');
+    document.getElementById('distances-sort').classList.toggle('active');
+    sortBy(3);
+  });
 }
 
 let size = 3220; // approximately 2 miles
@@ -180,6 +205,7 @@ async function appendResults(place) {
   const fueldata = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      gasitem.dataset.cost = price;
       return `REGULAR <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
     }
     return `${fuelPrice.type} <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
@@ -198,7 +224,8 @@ async function appendResults(place) {
                         ${response[1]}
                       </span>
                     </span>
-                    <br>`;      
+                    <br>`;
+    gasitem.dataset.distance = response[0];
   }
   let fuelordered = fueldata.reverse().map(price => `<span>${price}</span>`).join('');
 
@@ -221,6 +248,7 @@ async function appendResults(place) {
   gasitem.dataset.latitude = place.location.lat();
   gasitem.dataset.longitude = place.location.lng();
   gasitem.dataset.markerIndex = markers.length;
+  gasitem.dataset.address = place.formattedAddress;
 
   gasitem.addEventListener('click', function() {
     const lat = parseFloat(this.dataset.latitude);
@@ -351,9 +379,8 @@ function createMarker(place) {
 
 function clearResults() {
   const results = document.getElementById('results-list');
-  if (results.classList.contains('collapse')) {
-    results.classList.remove('collapse');
-  }
+  results.classList.remove('collapse');
+  document.getElementById('sort-options').classList.remove('collapse');
   while (results.firstChild) {
     results.removeChild(results.firstChild);
   }
@@ -371,6 +398,48 @@ function clearMarkers() {
 function clearInput() {
   var input = document.getElementById('search-bar');
   input.value = "";
+}
+
+async function sortBy(rule) {
+  const list = document.getElementById('results-list');
+  const itemsArray = Array.from(list.children);
+
+  if (rule === 1) {
+      // Sort by efficiency (you would define what this means)
+      const maxPrice = Math.max(...itemsArray.map(item => parseFloat(item.dataset.cost)));
+      const maxDistance = Math.max(...itemsArray.map(item => parseFloat(item.dataset.distance)))
+
+      itemsArray.sort((a, b) => {
+        const scoreA = getEfficiencyScore(parseFloat(a.dataset.cost), parseFloat(a.dataset.distance), maxPrice, maxDistance);
+        const scoreB = getEfficiencyScore(parseFloat(b.dataset.cost), parseFloat(b.dataset.distance), maxPrice, maxDistance);
+        return scoreA - scoreB;
+      });
+  } else if (rule === 2) {
+      // Sort by prices
+      itemsArray.sort((a, b) => {
+        return parseFloat(a.dataset.cost) - parseFloat(b.dataset.cost);
+      });
+  } else if (rule === 3) {
+      // Sort by distances
+      itemsArray.sort((a, b) => {
+        return parseFloat(a.dataset.distance) - parseFloat(b.dataset.distance);
+      });
+  }
+
+  // Clear the current list
+  list.innerHTML = '';
+
+  // Append the sorted items back to the list
+  itemsArray.forEach(item => {
+    list.appendChild(item);
+  });
+}
+
+function getEfficiencyScore(cost, distance, maxPrice, maxDistance, priceWeight = 0.8, distanceWeight = 0.2) {
+  const normalizedCost = cost / maxPrice;
+  const normalizedDistance = distance / maxDistance;
+  const efficiencyScore = (normalizedCost * priceWeight) + (normalizedDistance * distanceWeight);
+  return efficiencyScore;
 }
 
 initMap();

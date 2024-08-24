@@ -175,15 +175,30 @@ html, body {
   position: relative;
 }
 
-.dropdown .sort-options {
+#sort-options {
   position: absolute;
   top: 10px;
   left: 80px;
-  display: grid;
+  display: none;
   background-color: white;
 }
 
-.dropdown .sort-options button {
+#sort-options.collapse {
+  display: grid;
+}
+
+#sort-options button {
   border: none;
   cursor: pointer;
+  background-color: white;
+  padding: 3px 5px;
+  border-bottom: rgba(0, 0, 0, 0.1) solid 1px;
+}
+
+#sort-options button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+#sort-options button.active {
+  background-color: rgba(0, 0, 0, 0.1);
 }

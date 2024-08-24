@@ -9,6 +9,11 @@
 .gas-address {
   font-size: 14px;
   font-weight: 400;
+  cursor: pointer;
+}
+
+.gas-address:hover {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .gas-data {

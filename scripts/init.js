@@ -4,32 +4,47 @@ let map, places, geocoder, infowindow, distancematrix, markers = [], index;
 let size = 3220; // approximately 2 miles
 const increaseSize = 1660, maxSize = 16601; // approximately 10 miles
 
+let maxResult = 6;
+
+let newPos = false;
+
+let addresses = []
+
+let rankPreference;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
-  const { Place } = await google.maps.importLibrary("places");
+  const { Place, SearchNearbyRankPreference  } = await google.maps.importLibrary("places");
 
   geocoder = new google.maps.Geocoder();
   infowindow = new google.maps.InfoWindow();
   distancematrix = new google.maps.DistanceMatrixService();
   places = Place;
+  rankPreference = SearchNearbyRankPreference;
 
   map = new Map(document.getElementById("map"), {
     center: { lat: 0, lng: 0 },
     zoom: 16,
     disableDefaultUI: true,
     mapTypeControl: true,
+    zoomControl: true,
+    zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_BOTTOM 
+    },
     mapTypeControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_BOTTOM
+        position: google.maps.ControlPosition.RIGHT_TOP 
     }
   });
 
   google.maps.event.addListener(map, "zoom_changed", function() {
     document.getElementById('show-gas-button').style.display = "flex";
+    clearInput();
   });
 
   google.maps.event.addListener(map, "dragend", function() {
     document.getElementById('show-gas-button').style.display = "flex";
+    newPos = true;
+    clearInput();
   });
 
   initNavigationActions();
@@ -136,6 +151,7 @@ async function initNavigationActions() {
   document.getElementById('range-slider').addEventListener('input', function() {
     document.getElementById('range-value').textContent = document.getElementById('range-slider').value;
     increaseRange(document.getElementById('range-slider').value);
+    document.getElementById('show-gas-button').style.display = "flex";
   });
 
   document.getElementById('set-range-button').addEventListener('click', function() {
@@ -144,9 +160,11 @@ async function initNavigationActions() {
 }
 
 async function getGeocode() {
-  clearResults();
-  clearMarkers();
-
+  if (newPos === true) {
+    clearResults();
+    clearMarkers();
+  }
+  
   const address = document.getElementById('search-bar').value.trim();
 
   if (address === "") { // search using map crosshair (no address typed in search-bar)
@@ -170,7 +188,6 @@ async function transformAddress(address) {
 }
 
 async function showGasStations(location) {
-  console.log(size);
   const request = {
     fields: ["displayName", 
              "location", 
@@ -181,14 +198,15 @@ async function showGasStations(location) {
       radius: size,
     },
     includedPrimaryTypes: ["gas_station"],
-    maxResultCount: 10,
+    maxResultCount: maxResult,
+    rankPreference: rankPreference.DISTANCE,
     language: "en-US",
   };
 
   try {
     const response = await places.searchNearby(request);
     const results = response.places.filter(place => 
-      place.fuelOptions && place.fuelOptions.fuelPrices // && !addresses.includes(place.formattedAddress)
+      place.fuelOptions && place.fuelOptions.fuelPrices && !addresses.includes(place.formattedAddress)
     );
 
     if (results.length === 0) {
@@ -258,6 +276,16 @@ async function appendResults(place) {
                         </span>
                         </div>`;
 
+  gasitem.querySelector('.gas-address').addEventListener('click', function() {
+    navigator.clipboard.writeText(place.formattedAddress)
+      .then(() => {
+        alert("Copied to clipboard!");
+      })
+      .catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+  });
+
   gasitem.dataset.latitude = place.location.lat();
   gasitem.dataset.longitude = place.location.lng();
   gasitem.dataset.markerIndex = markers.length;
@@ -287,10 +315,12 @@ async function appendResults(place) {
       }
     }
   });
-  
+
   results.appendChild(gasitem);
-  results.style.display = "block";
   createMarker(place); // add markers here
+  addresses.push(place.formattedAddress);
+
+  results.style.display = "block";  
 }
 
 async function getDistanceInfo(place) {
@@ -391,12 +421,16 @@ function createMarker(place) {
 }
 
 function clearResults() {
+  newPos = false;
   const results = document.getElementById('results-list');
   results.classList.remove('collapse');
   document.getElementById('range-options').classList.remove('collapse');
   document.getElementById('sort-options').classList.remove('collapse');
   while (results.firstChild) {
     results.removeChild(results.firstChild);
+  }
+  while (addresses.length > 0) {
+    addresses.pop();
   }
 }
 
@@ -456,6 +490,7 @@ async function sortBy(rule) {
 
 async function increaseRange(value) {
   size = value * increaseSize;
+  maxResult = (size / increaseSize) * 3;
 }
 
 initMap();

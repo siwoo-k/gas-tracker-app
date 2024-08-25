@@ -7,25 +7,29 @@
 }
 
 .gas-item-div {
-  background-color: red;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .gas-item-button button {
+  background-color: transparent;
   border: none;
-  height: 30px;
-  width: 30px;
-  border-radius: 30px;
-  margin-left: 4px;
+  padding: 0 2px;
+  margin-left: 6px;
   cursor: pointer;
 }
 
+.star-button {
+  opacity: 0.3;
+}
+
+.star-button.toggle {
+  opacity: 1;
+}
+
 .gas-item-button img {
-  height: 16px;
-  opacity: 0.5;
-  transition: opacity 0.3s;
+  height: 30px;
 }
 
 .gas-address {

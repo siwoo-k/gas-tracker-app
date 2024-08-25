@@ -295,8 +295,20 @@ async function appendResults(place) {
       });
   });
 
+  gasitem.querySelector('.open-google-button').addEventListener('click', function(event) {
+    event.stopPropagation();
+    const url = `https://www.google.com/maps?q=${place.location.lat()},${place.location.lng()}`;
+    window.open(url, '_blank');
+  })
+
   gasitem.querySelector('.star-button').addEventListener('click', function(event) {
     event.stopPropagation(); // prevent parent event to activate
+    if (this.classList.contains('toggle')) {
+      this.classList.toggle
+    } else {
+      
+      
+    }
     this.classList.toggle('toggle');
   });
 

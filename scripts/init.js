@@ -267,11 +267,11 @@ async function appendResults(place) {
                           </span><br>
                         </div>
                         <div class="gas-item-button">
-                          <button>
-                            <img src="images/icons/user.png">
+                          <button class="star-button">
+                            <img src="images/icons/star.png">
                           </button>
-                          <button>
-                            <img src="images/icons/user.png">
+                          <button class="open-google-button">
+                            <img src="images/icons/map.png">
                           </button>
                         </div>
                       </div>
@@ -284,7 +284,8 @@ async function appendResults(place) {
                       </span>
                       </div>`;
 
-  gasitem.querySelector('.gas-address').addEventListener('click', function() {
+  gasitem.querySelector('.gas-address').addEventListener('click', function(event) {
+    event.stopPropagation(); // prevent parent event to activate
     navigator.clipboard.writeText(place.formattedAddress)
       .then(() => {
         alert("Copied to clipboard!");
@@ -292,6 +293,11 @@ async function appendResults(place) {
       .catch(err => {
         console.error('Failed to copy text: ', err);
       });
+  });
+
+  gasitem.querySelector('.star-button').addEventListener('click', function(event) {
+    event.stopPropagation(); // prevent parent event to activate
+    this.classList.toggle('toggle');
   });
 
   gasitem.dataset.latitude = place.location.lat();
@@ -328,7 +334,7 @@ async function appendResults(place) {
   createMarker(place); // add markers here
   addresses.push(place.formattedAddress);
 
-  results.style.display = "block";  
+  results.style.display = "block";    
 }
 
 async function getDistanceInfo(place) {

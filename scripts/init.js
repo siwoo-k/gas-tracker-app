@@ -271,7 +271,7 @@ async function appendResults(place) {
                             <img src="images/icons/star.png">
                           </button>
                           <button class="open-google-button">
-                            <img src="images/icons/map.png">
+                            <img src="images/icons/share.png">
                           </button>
                         </div>
                       </div>

@@ -220,6 +220,44 @@ async function showGasStations(location) {
     }
     sortBy(2);
 
+    document.querySelectorAll('.switch-prices').forEach(button => {
+      button.addEventListener('click', function(event) {
+          event.stopPropagation();
+  
+          // Get all the switch-price buttons
+          const allSwitchPrices = document.querySelectorAll('.switch-prices');
+  
+          // Get all the fuel prices
+          const allFuelPrices = document.querySelectorAll('.fuel-price');
+  
+          // Check the current state of the clicked button
+          const isCreditPrice = this.textContent === "credit price";
+  
+          // Update all switch-price buttons
+          allSwitchPrices.forEach(switchPrice => {
+              if (isCreditPrice) {
+                  switchPrice.textContent = "estimated cash price";
+                  switchPrice.style.color = "rgb(78, 221, 78)";
+              } else {
+                  switchPrice.textContent = "credit price";
+                  switchPrice.style.color = "orange";
+              }
+          });
+  
+          // Update all fuel-price elements
+          allFuelPrices.forEach(fuelPrice => {
+              let price = parseFloat(fuelPrice.textContent); 
+              if (isCreditPrice) {
+                  price -= 0.10; 
+              } else {
+                  price += 0.10; 
+              }
+              fuelPrice.textContent = price.toFixed(2); 
+          });
+      });
+    });
+  
+
   } catch (error) {
     alert('Places service was unsuccessful: ' + error.message);
   }
@@ -233,9 +271,9 @@ async function appendResults(place) {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
       gasitem.dataset.cost = price;
-      return `REGULAR <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
+      return `REGULAR <br>&#36;<span class="fuel-price">${price}</span> ${fuelPrice.price.currencyCode}`;
     }
-    return `${fuelPrice.type} <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
+    return `${fuelPrice.type} <br>&#36;<span class="fuel-price">${price}</span> ${fuelPrice.price.currencyCode}`;
   });
 
   let distanceinfo = "";
@@ -275,7 +313,7 @@ async function appendResults(place) {
                           </button>
                         </div>
                       </div>
-                      <span style="color: orange; font-size: 12px; margin: 0; margin-bottom: -10px;">credit prices</span><br>
+                      <span class="switch-prices">credit price</span><br>
                       <div class="gas-data-div">
                         ${fuelordered}
                       </div>
@@ -300,6 +338,28 @@ async function appendResults(place) {
     const url = `https://www.google.com/maps?q=${place.location.lat()},${place.location.lng()}`;
     window.open(url, '_blank');
   })
+
+  // gasitem.querySelector('.switch-prices').addEventListener('click', function(event) {
+  //   event.stopPropagation();
+  //   const fuelprice = gasitem.querySelectorAll('.fuel-price');
+  //   if (this.textContent === "credit price") {
+  //     this.textContent = "estimated cash price";
+  //     this.style.color = "rgb(78, 221, 78)";
+  //     fuelprice.forEach(fuelprice => {
+  //       let price = parseFloat(fuelprice.textContent); 
+  //       price -= 0.10; 
+  //       fuelprice.textContent = price.toFixed(2); 
+  //     });
+  //   } else {
+  //     this.textContent = "credit price";
+  //     this.style.color = "orange";
+  //     fuelprice.forEach(fuelprice => {
+  //       let price = parseFloat(fuelprice.textContent); 
+  //       price += 0.10; 
+  //       fuelprice.textContent = price.toFixed(2); 
+  //     });
+  //   }
+  // })
 
   gasitem.querySelector('.star-button').addEventListener('click', function(event) {
     event.stopPropagation(); // prevent parent event to activate

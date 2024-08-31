@@ -93,6 +93,33 @@
   #results-tab {
     margin: 0;
   }
+
+  #toggle-results-button {
+    top: -43px;
+    border-bottom: none;
+    height: 70px;
+    width: 16px;
+    left: 50%;
+
+    transform: translate(-50%, 0);
+    transform: rotateZ(-90deg);
+  }
+
+  #toggle-results-button div {
+    height: 36px;
+    width: 6px;
+    margin-left: 4px;
+  }
+}
+
+@media (max-width: 1000px) and (min-width: 601px) {
+  #toggle-results-button {
+    border-bottom: none;
+    top: -30px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    transform: rotateZ(-90deg);
+  }
 }
 
 @media (max-width: 1000px) {
@@ -112,21 +139,5 @@
 
   #results-list {
     padding: 0;
-  }
-
-  #toggle-results-button {
-    top: -40px;
-    left: 50%;
-    height: 65px;
-    width: 16px;
-    border-left: none;
-    transform: translate(-50%, 0);
-    transform: rotateZ(-90deg);
-  }
-
-  #toggle-results-button div {
-    height: 40px;
-    width: 6px;
-    margin-left: 4px;
   }
 }

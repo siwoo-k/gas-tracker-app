@@ -112,11 +112,11 @@ async function initNavigationActions() {
     clearResults();
     clearMarkers();
     document.getElementById('show-gas-button').style.display = "none";
-    document.getElementById('results-list').style.display = "none";
+    document.getElementById('results-tab').style.display = "none";
   });
 
   document.getElementById('toggle-results-button').addEventListener('click', function() {
-    document.getElementById('results-list').classList.toggle('collapse');
+    document.getElementById('results-tab').classList.toggle('collapse');
   });
 
   document.getElementById('sort-results-button').addEventListener('click', function() {
@@ -346,7 +346,7 @@ async function appendResults(place) {
   createMarker(place); // add markers here
   addresses.push(place.formattedAddress);
 
-  results.style.display = "block";    
+  document.getElementById('results-tab').style.display = "block";    
 }
 
 async function getDistanceInfo(place) {
@@ -449,7 +449,7 @@ function createMarker(place) {
 function clearResults() {
   newPos = false;
   const results = document.getElementById('results-list');
-  results.classList.remove('collapse');
+  document.getElementById('results-tab').classList.remove('collapse');
   document.getElementById('range-options').classList.remove('collapse');
   document.getElementById('sort-options').classList.remove('collapse');
   while (results.firstChild) {

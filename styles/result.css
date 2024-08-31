@@ -1,33 +1,41 @@
 /* ======================
     Results Page Styles 
   ======================= */
-#results-page {
-  position: relative;
+#results-tab {
+  background-color: red;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  max-width: 330px;
+  min-width: 330px;
+  margin-left: 72px;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
+  display: none;
 }
 
 #results-list {
   background-color: white;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
-  left: 0;
-  list-style-type: none;
-  margin: 0;
-  max-height: 92%;
-  max-width: 330px;
-  min-width: 330px;
-  overflow-y: scroll;
-  padding: 0;
-  padding-top: 75px;
-  margin-left: 72px;
-  position: fixed;
+  position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
   bottom: 0;
-  display: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  padding-top: 75px;
+  overscroll-behavior: none;
+  
+  overflow-y: scroll;
   white-space: nowrap;
-  transition: transform 0.3s ease;
-  transform: translateX(0);
+  
 }
 
-#results-list.collapse {
+#results-tab.collapse {
   transform: translateX(-100%);
 }
 
@@ -56,29 +64,69 @@
   opacity: 1;
 }
 
+#toggle-results-button {
+  position: absolute;
+  height: 50px;
+  width: 12px;
+  padding: 0;
+  background-color: white;
+  border: solid 1px rgba(0, 0, 0, 0.1);
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  top: 50%;
+  transform: translate(0, -50%);
+  left: 330px;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+#toggle-results-button div {
+  background-color: rgba(0, 0, 0, 0.2);
+  height: 25px;
+  border: none;
+  border-radius: 15px;
+  width: 4px;
+  margin-left: 3px;
+}
+
 @media (max-width: 600px) {
-  #results-list {
-    padding: 0;
+  #results-tab {
     margin: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 60%;
-    transition: none;
-    max-width: none;
-    min-width: none;
   }
 }
 
 @media (max-width: 1000px) {
-  #results-list {
-    padding: 0;
+  #results-tab {
     left: 0;
     right: 0;
     bottom: 0;
     top: 60%;
-    transition: none;
     max-width: none;
     min-width: none;
+    transform: translateY(0);
+  }
+
+  #results-tab.collapse {
+    transform: translateY(100%);
+  }
+
+  #results-list {
+    padding: 0;
+  }
+
+  #toggle-results-button {
+    top: -40px;
+    left: 50%;
+    height: 65px;
+    width: 16px;
+    border-left: none;
+    transform: translate(-50%, 0);
+    transform: rotateZ(-90deg);
+  }
+
+  #toggle-results-button div {
+    height: 40px;
+    width: 6px;
+    margin-left: 4px;
   }
 }

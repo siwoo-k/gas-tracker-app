@@ -30,6 +30,23 @@ async function initMap() {
     zoomControlOptions: {
         position: google.maps.ControlPosition.RIGHT_BOTTOM 
     },
+    styles: [
+      {
+        featureType: "poi",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+      {
+        featureType: "poi.business",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }], // turns off pins on map
+      },
+      {
+        featureType: "transit",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+    ],
   });
 
   google.maps.event.addListener(map, "zoom_changed", function() {
@@ -218,7 +235,6 @@ async function showGasStations(location) {
       await appendResults(place);
       // addresses.push(place.formattedAddress);
     }
-    sortBy(2);
 
     document.querySelectorAll('.switch-prices').forEach(button => {
       button.addEventListener('click', function(event) {

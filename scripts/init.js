@@ -233,7 +233,6 @@ async function showGasStations(location) {
     
     for (let place of results) {
       await appendResults(place);
-      // addresses.push(place.formattedAddress);
     }
 
     document.querySelectorAll('.switch-prices').forEach(button => {
@@ -310,33 +309,40 @@ async function appendResults(place) {
   }
   let fuelordered = fueldata.reverse().map(price => `<span>${price}</span>`).join('');
 
-  gasitem.innerHTML = `<div class="gas-item-div">
-                        <div>
-                          <span style="font-weight: 500;">
-                            ${place.displayName}
-                          </span>
-                          <br>
-                          <span class="gas-address">
-                            ${place.formattedAddress.split(',')[0]}
-                          </span><br>
+  gasitem.innerHTML = ` <div class="gas-item-div">
+                          <div class="gas-item-bar">
+                            <div>
+                              <span style="font-weight: 500; font-size: 18px;">
+                                ${place.displayName}
+                              </span>
+                              <br>
+                              <span class="gas-address">
+                                ${place.formattedAddress.split(',')[0]}
+                              </span>
+                              <br>
+                            </div>
+                            <div class="gas-item-button">
+                              <button class="star-button">
+                                <img src="images/icons/star.png">
+                              </button>
+                              <button class="open-google-button">
+                                <img src="images/icons/share.png">
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <div class="gas-item-button">
-                          <button class="star-button">
-                            <img src="images/icons/star.png">
-                          </button>
-                          <button class="open-google-button">
-                            <img src="images/icons/share.png">
-                          </button>
+
+                        <br>
+                        <span class="switch-prices">credit price</span><br>
+                        
+                        <div class="gas-data-div">
+                          ${fuelordered}
                         </div>
-                      </div>
-                      <span class="switch-prices">credit price</span><br>
-                      <div class="gas-data-div">
-                        ${fuelordered}
-                      </div>
-                      <span style="font-size: 14px; font-weight: 400;";>
-                        ${distanceinfo}
-                      </span>
-                      </div>`;
+
+                        <span style="font-size: 14px; font-weight: 400;";>
+                          ${distanceinfo}
+                        </span>
+                      `;
 
   gasitem.querySelector('.gas-address').addEventListener('click', function(event) {
     event.stopPropagation(); // prevent parent event to activate
@@ -355,28 +361,7 @@ async function appendResults(place) {
     window.open(url, '_blank');
   })
 
-  // gasitem.querySelector('.switch-prices').addEventListener('click', function(event) {
-  //   event.stopPropagation();
-  //   const fuelprice = gasitem.querySelectorAll('.fuel-price');
-  //   if (this.textContent === "credit price") {
-  //     this.textContent = "estimated cash price";
-  //     this.style.color = "rgb(78, 221, 78)";
-  //     fuelprice.forEach(fuelprice => {
-  //       let price = parseFloat(fuelprice.textContent); 
-  //       price -= 0.10; 
-  //       fuelprice.textContent = price.toFixed(2); 
-  //     });
-  //   } else {
-  //     this.textContent = "credit price";
-  //     this.style.color = "orange";
-  //     fuelprice.forEach(fuelprice => {
-  //       let price = parseFloat(fuelprice.textContent); 
-  //       price += 0.10; 
-  //       fuelprice.textContent = price.toFixed(2); 
-  //     });
-  //   }
-  // })
-
+  // to-do star button (add star to marker)
   gasitem.querySelector('.star-button').addEventListener('click', function(event) {
     event.stopPropagation(); // prevent parent event to activate
     if (this.classList.contains('toggle')) {

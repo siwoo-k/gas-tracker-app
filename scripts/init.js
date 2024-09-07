@@ -405,6 +405,9 @@ async function appendResults(place) {
 
   results.appendChild(gasitem);
   createMarker(place); // add markers here
+
+
+
   addresses.push(place.formattedAddress);
 
   document.getElementById('results-tab').style.display = "block";    
@@ -449,7 +452,7 @@ function createMarker(place) {
   });
 
   const gasdata = document.createElement('div');
-  gasdata.setAttribute("class", "gas-data")
+  gasdata.setAttribute("class", "marker-data")
 
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
@@ -459,15 +462,20 @@ function createMarker(place) {
     return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
-  gasdata.innerHTML = `<strong>
-                         ${place.displayName}
-                       </strong><br>
-                       <span class="gas-address">
-                         ${place.formattedAddress}
-                       </span><br>
-                       <span class="gas-prices">` + 
-                         fuelPricesArray.reverse().join('<br>') + 
-                      `</span></div>`;
+  gasdata.innerHTML = `
+                      <div>
+                        <span style="font-weight: 500; font-size: 14px;">
+                          ${place.displayName}
+                        </span>
+                        <br>
+                        <span style="font-weight: 400; font-size: 12px;">
+                          ${place.formattedAddress.split(',')[0]}
+                        </span>
+                      </div>
+                      <span style="font-weight: 300; font-size: 12px;">
+                        ${fuelPricesArray.reverse().join('<br>')} 
+                      </span>
+                      </div>`;
 
   google.maps.event.addListener(marker, 'mouseover', function() {
     infowindow.setContent(gasdata);

@@ -50,10 +50,22 @@
   color: rgba(0, 0, 0, 0.7);
 }
 
-.gas-data {
+.gas-data, .marker-data {
   display: inline-block;
   margin: 0;
   vertical-align: text-top;
+}
+
+.marker-data {
+  position: absolute;
+  inset: 0;
+  padding: 10px;
+}
+
+.gm-style-iw {
+  position: relative;
+  height: 110px !important;
+  width: 160px !important;
 }
 
 .gas-data-buttons {

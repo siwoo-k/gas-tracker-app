@@ -141,3 +141,19 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 2px 6px;
 }
+
+.price-label {
+  margin-bottom: 55px; 
+  background-color: white;
+  padding: 3px 5px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.price-label.small {
+  margin-bottom: 55px; 
+}
+
+.price-label.big {
+  margin-bottom: 70px; 
+}

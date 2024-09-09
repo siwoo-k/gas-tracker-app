@@ -12,6 +12,8 @@ let addresses = []
 
 let rankPreference;
 
+let prevMarker;
+
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
   const { Place, SearchNearbyRankPreference  } = await google.maps.importLibrary("places");
@@ -383,30 +385,34 @@ async function appendResults(place) {
     const lng = parseFloat(this.dataset.longitude);
     map.panTo({ lat: lat, lng: lng });
 
-    if (index != null && index <= markers.length - 1) {
-      markers[index].setIcon({
-        url: "images/icons/marker.png",
-        scaledSize: new google.maps.Size(32, 32),
-      })
+    if (prevMarker) {
+      prevMarker.setZIndex(0);
     }
+    marker.setZIndex(1);
+    prevMarker = marker;
 
-    for (let i = 0; i < markers.length; i++) {
-      const markerpos = markers[i].getPosition();
-      if (markerpos.lat() === lat && markerpos.lng() === lng) {
-        index = i;
-        markers[i].setIcon({
-          url: "images/icons/marker.png",
-          scaledSize: new google.maps.Size(48, 48),
-        })
-        break;
-      }
-    }
+    // if (index != null && index <= markers.length - 1) {
+    //   markers[index].setIcon({
+    //     url: "images/icons/marker.png",
+    //     scaledSize: new google.maps.Size(32, 32),
+    //   })
+    // }
+
+    // for (let i = 0; i < markers.length; i++) {
+    //   const markerpos = markers[i].getPosition();
+    //   if (markerpos.lat() === lat && markerpos.lng() === lng) {
+    //     index = i;
+    //     markers[i].setIcon({
+    //       url: "images/icons/marker.png",
+    //       scaledSize: new google.maps.Size(48, 48),
+    //     })
+    //     break;
+    //   }
+    // }
   });
 
   results.appendChild(gasitem);
   createMarker(place); // add markers here
-
-
 
   addresses.push(place.formattedAddress);
 
@@ -442,24 +448,31 @@ async function getDistanceInfo(place) {
 }
 
 function createMarker(place) {
-  const marker = new google.maps.Marker({
-    map: map,
-    position: place.location,
-    icon: {
-      url: "images/icons/marker.png",
-      scaledSize: new google.maps.Size(32, 32),
-    }
-  });
-
   const gasdata = document.createElement('div');
   gasdata.setAttribute("class", "marker-data")
 
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      gasdata.dataset.price = price;
       return `REGULAR &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
     }
     return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+  });
+
+  const marker = new google.maps.Marker({
+    map: map,
+    position: place.location,
+    icon: {
+      url: "images/icons/marker.png",
+      scaledSize: new google.maps.Size(32, 32),
+    },
+    label: {
+      text: `$${gasdata.dataset.price}`,
+      fontSize: "12px",
+      className: "price-label",
+    },
+    zIndex: 0,
   });
 
   gasdata.innerHTML = `
@@ -492,24 +505,30 @@ function createMarker(place) {
       gasitem.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    if (index != null && index <= markers.length - 1) {
-      markers[index].setIcon({
-        url: "images/icons/marker.png",
-        scaledSize: new google.maps.Size(32, 32),
-      });
+    if (prevMarker) {
+      prevMarker.setZIndex(0);
     }
+    marker.setZIndex(1);
+    prevMarker = marker;
 
-    for (let i = 0; i < markers.length; i++) {
-      const markerpos = markers[i].getPosition();
-      if (markerpos.lat() === place.location.lat() && markerpos.lng() === place.location.lng()) {
-        index = i;
-        markers[i].setIcon({
-          url: "images/icons/marker.png",
-          scaledSize: new google.maps.Size(48, 48), 
-        });
-        break;
-      }
-    }
+    // if (index != null && index <= markers.length - 1) {
+    //   markers[index].setIcon({
+    //     url: "images/icons/marker.png",
+    //     scaledSize: new google.maps.Size(32, 32),
+    //   });
+    // }
+
+    // for (let i = 0; i < markers.length; i++) {
+    //   const markerpos = markers[i].getPosition();
+    //   if (markerpos.lat() === place.location.lat() && markerpos.lng() === place.location.lng()) {
+    //     index = i;
+    //     markers[i].setIcon({
+    //       url: "images/icons/marker.png",
+    //       scaledSize: new google.maps.Size(48, 48), 
+    //     });
+    //     break;
+    //   }
+    // }
   });
 
   markers.push(marker);
@@ -535,6 +554,7 @@ function clearMarkers() {
   }
   markers = [];
   index = null;
+  prevMarker = null;
 }
 
 function clearInput() {

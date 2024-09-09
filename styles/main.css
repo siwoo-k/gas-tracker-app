@@ -8,6 +8,7 @@ html, body {
   padding: 0;
   touch-action: none;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none; /* remove scroll bouncing */
 }
 
 #side-bar {

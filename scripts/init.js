@@ -391,6 +391,11 @@ async function appendResults(place) {
         url: "images/icons/marker.png",
         scaledSize: new google.maps.Size(32, 32),
       });
+      prevMarker.setLabel({
+        text: `$${prevMarker.get('price')}`,
+        fontSize: "12px",
+        className: "price-label small",
+      })
     }
 
     for (let i = 0; i < markers.length; i++) {
@@ -400,6 +405,11 @@ async function appendResults(place) {
         markers[i].setIcon({
           url: "images/icons/marker.png",
           scaledSize: new google.maps.Size(48, 48),
+        })
+        markers[i].setLabel({
+          text: `$${markers[i].get('price')}`,
+          fontSize: "12px",
+          className: "price-label big",
         })
         prevMarker = markers[i];
         break;
@@ -466,10 +476,11 @@ function createMarker(place) {
     label: {
       text: `$${gasdata.dataset.price}`,
       fontSize: "12px",
-      className: "price-label",
+      className: "price-label small",
     },
     zIndex: 0,
   });
+  marker.set('price', gasdata.dataset.price);
 
   gasdata.innerHTML = `
                       <div>
@@ -507,12 +518,22 @@ function createMarker(place) {
         url: "images/icons/marker.png",
         scaledSize: new google.maps.Size(32, 32),
       });
+      prevMarker.setLabel({
+        text: `$${prevMarker.get('price')}`,
+        fontSize: "12px",
+        className: "price-label small",
+      })
     }
 
     marker.setZIndex(1);
     marker.setIcon({
       url: "images/icons/marker.png",
       scaledSize: new google.maps.Size(48, 48), 
+    })
+    marker.setLabel({
+      text: `$${marker.get('price')}`,
+      fontSize: "12px",
+      className: "price-label big",
     })
     prevMarker = marker;
   });

@@ -377,7 +377,7 @@ async function appendResults(place) {
 
   gasitem.dataset.latitude = place.location.lat();
   gasitem.dataset.longitude = place.location.lng();
-  gasitem.dataset.markerIndex = markers.length;
+  // gasitem.dataset.markerIndex = markers.length;
   gasitem.dataset.address = place.formattedAddress;
 
   gasitem.addEventListener('click', function() {
@@ -387,28 +387,24 @@ async function appendResults(place) {
 
     if (prevMarker) {
       prevMarker.setZIndex(0);
+      prevMarker.setIcon({
+        url: "images/icons/marker.png",
+        scaledSize: new google.maps.Size(32, 32),
+      });
     }
-    marker.setZIndex(1);
-    prevMarker = marker;
 
-    // if (index != null && index <= markers.length - 1) {
-    //   markers[index].setIcon({
-    //     url: "images/icons/marker.png",
-    //     scaledSize: new google.maps.Size(32, 32),
-    //   })
-    // }
-
-    // for (let i = 0; i < markers.length; i++) {
-    //   const markerpos = markers[i].getPosition();
-    //   if (markerpos.lat() === lat && markerpos.lng() === lng) {
-    //     index = i;
-    //     markers[i].setIcon({
-    //       url: "images/icons/marker.png",
-    //       scaledSize: new google.maps.Size(48, 48),
-    //     })
-    //     break;
-    //   }
-    // }
+    for (let i = 0; i < markers.length; i++) {
+      const markerpos = markers[i].getPosition();
+      if (markerpos.lat() === lat && markerpos.lng() === lng) {
+        markers[i].setZIndex(1);
+        markers[i].setIcon({
+          url: "images/icons/marker.png",
+          scaledSize: new google.maps.Size(48, 48),
+        })
+        prevMarker = markers[i];
+        break;
+      }
+    }
   });
 
   results.appendChild(gasitem);
@@ -507,28 +503,18 @@ function createMarker(place) {
 
     if (prevMarker) {
       prevMarker.setZIndex(0);
+      prevMarker.setIcon({
+        url: "images/icons/marker.png",
+        scaledSize: new google.maps.Size(32, 32),
+      });
     }
+
     marker.setZIndex(1);
+    marker.setIcon({
+      url: "images/icons/marker.png",
+      scaledSize: new google.maps.Size(48, 48), 
+    })
     prevMarker = marker;
-
-    // if (index != null && index <= markers.length - 1) {
-    //   markers[index].setIcon({
-    //     url: "images/icons/marker.png",
-    //     scaledSize: new google.maps.Size(32, 32),
-    //   });
-    // }
-
-    // for (let i = 0; i < markers.length; i++) {
-    //   const markerpos = markers[i].getPosition();
-    //   if (markerpos.lat() === place.location.lat() && markerpos.lng() === place.location.lng()) {
-    //     index = i;
-    //     markers[i].setIcon({
-    //       url: "images/icons/marker.png",
-    //       scaledSize: new google.maps.Size(48, 48), 
-    //     });
-    //     break;
-    //   }
-    // }
   });
 
   markers.push(marker);

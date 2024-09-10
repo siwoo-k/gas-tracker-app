@@ -239,38 +239,58 @@ async function showGasStations(location) {
 
     document.querySelectorAll('.switch-prices').forEach(button => {
       button.addEventListener('click', function(event) {
-          event.stopPropagation();
-  
-          // Get all the switch-price buttons
-          const allSwitchPrices = document.querySelectorAll('.switch-prices');
-  
-          // Get all the fuel prices
-          const allFuelPrices = document.querySelectorAll('.fuel-price');
-  
-          // Check the current state of the clicked button
-          const isCreditPrice = this.textContent === "credit price";
-  
-          // Update all switch-price buttons
-          allSwitchPrices.forEach(switchPrice => {
-              if (isCreditPrice) {
-                  switchPrice.textContent = "estimated cash price";
-                  switchPrice.style.color = "rgb(78, 221, 78)";
-              } else {
-                  switchPrice.textContent = "credit price";
-                  switchPrice.style.color = "orange";
-              }
-          });
-  
-          // Update all fuel-price elements
-          allFuelPrices.forEach(fuelPrice => {
-              let price = parseFloat(fuelPrice.textContent); 
-              if (isCreditPrice) {
-                  price -= 0.10; 
-              } else {
-                  price += 0.10; 
-              }
-              fuelPrice.textContent = price.toFixed(2); 
-          });
+        event.stopPropagation();
+
+        // Get all the switch-price buttons
+        const allSwitchPrices = document.querySelectorAll('.switch-prices');
+
+        // Get all the fuel prices
+        const allFuelPrices = document.querySelectorAll('.fuel-price');
+
+        // Check the current state of the clicked button
+        const isCreditPrice = this.textContent === "credit price";
+
+        // Update all switch-price buttons
+        allSwitchPrices.forEach(switchPrice => {
+          if (isCreditPrice) {
+            switchPrice.textContent = "estimated cash price";
+            switchPrice.style.color = "rgb(78, 221, 78)";
+          } else {
+            switchPrice.textContent = "credit price";
+            switchPrice.style.color = "orange";
+          }
+        });
+
+        // Update all fuel-price elements
+        allFuelPrices.forEach(fuelPrice => {
+          let price = parseFloat(fuelPrice.textContent); 
+          if (isCreditPrice) {
+            price -= 0.10; 
+          } else {
+            price += 0.10; 
+          }
+          fuelPrice.textContent = price.toFixed(2); 
+        });
+
+        markers.forEach(marker => {
+          let price = parseFloat(marker.get('price'));
+          if (isCreditPrice) {
+            price -= 0.10;
+            marker.setLabel({
+              text: `$${price.toFixed(2)}`,
+              fontSize: "12px",
+              className: `price-label ${marker.get('size')}`,
+            })
+          } else {
+            price += 0.10;
+            marker.setLabel({
+              text: `$${price.toFixed(2)}`,
+              fontSize: "12px",
+              className: `price-label ${marker.get('size')}`,
+            })
+          }
+          marker.set('price', price.toFixed(2));
+        })
       });
     });
   
@@ -396,6 +416,7 @@ async function appendResults(place) {
         fontSize: "12px",
         className: "price-label small",
       })
+      prevMarker.set('size', 'small');
     }
 
     for (let i = 0; i < markers.length; i++) {
@@ -411,6 +432,7 @@ async function appendResults(place) {
           fontSize: "12px",
           className: "price-label big",
         })
+        markers[i].set('size', 'big');
         prevMarker = markers[i];
         break;
       }
@@ -483,6 +505,7 @@ function createMarker(place) {
   });
   marker.set('price', gasdata.dataset.price);
   marker.set('num', markernum);
+  marker.set('size', 'small');
 
   gasdata.innerHTML = `
                       <div>
@@ -525,6 +548,7 @@ function createMarker(place) {
         fontSize: "12px",
         className: "price-label small",
       })
+      prevMarker.set('size', 'small');
     }
 
     marker.setZIndex(1);
@@ -537,6 +561,7 @@ function createMarker(place) {
       fontSize: "12px",
       className: "price-label big",
     })
+    marker.set('size', 'big');
     prevMarker = marker;
   });
 

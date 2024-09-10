@@ -1,4 +1,4 @@
-let map, places, geocoder, infowindow, distancematrix, markers = [], index;
+let map, places, geocoder, infowindow, distancematrix, markers = [], markernum = 1;
 
 
 let size = 3220; // approximately 2 miles
@@ -11,6 +11,8 @@ let newPos = false;
 let addresses = []
 
 let rankPreference;
+
+let prevMarker;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -30,6 +32,23 @@ async function initMap() {
     zoomControlOptions: {
         position: google.maps.ControlPosition.RIGHT_BOTTOM 
     },
+    styles: [
+      {
+        featureType: "poi",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+      {
+        featureType: "poi.business",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }], // turns off pins on map
+      },
+      {
+        featureType: "transit",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }],
+      },
+    ],
   });
 
   google.maps.event.addListener(map, "zoom_changed", function() {
@@ -112,11 +131,11 @@ async function initNavigationActions() {
     clearResults();
     clearMarkers();
     document.getElementById('show-gas-button').style.display = "none";
-    document.getElementById('results-list').style.display = "none";
+    document.getElementById('results-tab').style.display = "none";
   });
 
   document.getElementById('toggle-results-button').addEventListener('click', function() {
-    document.getElementById('results-list').classList.toggle('collapse');
+    document.getElementById('results-tab').classList.toggle('collapse');
   });
 
   document.getElementById('sort-results-button').addEventListener('click', function() {
@@ -216,9 +235,65 @@ async function showGasStations(location) {
     
     for (let place of results) {
       await appendResults(place);
-      // addresses.push(place.formattedAddress);
     }
-    sortBy(2);
+
+    document.querySelectorAll('.switch-prices').forEach(button => {
+      button.addEventListener('click', function(event) {
+        event.stopPropagation();
+
+        // Get all the switch-price buttons
+        const allSwitchPrices = document.querySelectorAll('.switch-prices');
+
+        // Get all the fuel prices
+        const allFuelPrices = document.querySelectorAll('.fuel-price');
+
+        // Check the current state of the clicked button
+        const isCreditPrice = this.textContent === "credit price";
+
+        // Update all switch-price buttons
+        allSwitchPrices.forEach(switchPrice => {
+          if (isCreditPrice) {
+            switchPrice.textContent = "estimated cash price";
+            switchPrice.style.color = "rgb(78, 221, 78)";
+          } else {
+            switchPrice.textContent = "credit price";
+            switchPrice.style.color = "orange";
+          }
+        });
+
+        // Update all fuel-price elements
+        allFuelPrices.forEach(fuelPrice => {
+          let price = parseFloat(fuelPrice.textContent); 
+          if (isCreditPrice) {
+            price -= 0.10; 
+          } else {
+            price += 0.10; 
+          }
+          fuelPrice.textContent = price.toFixed(2); 
+        });
+
+        markers.forEach(marker => {
+          let price = parseFloat(marker.get('price'));
+          if (isCreditPrice) {
+            price -= 0.10;
+            marker.setLabel({
+              text: `$${price.toFixed(2)}`,
+              fontSize: "12px",
+              className: `price-label ${marker.get('size')}`,
+            })
+          } else {
+            price += 0.10;
+            marker.setLabel({
+              text: `$${price.toFixed(2)}`,
+              fontSize: "12px",
+              className: `price-label ${marker.get('size')}`,
+            })
+          }
+          marker.set('price', price.toFixed(2));
+        })
+      });
+    });
+  
 
   } catch (error) {
     alert('Places service was unsuccessful: ' + error.message);
@@ -233,9 +308,9 @@ async function appendResults(place) {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
       gasitem.dataset.cost = price;
-      return `REGULAR <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
+      return `REGULAR <br>&#36;<span class="fuel-price">${price}</span> ${fuelPrice.price.currencyCode}`;
     }
-    return `${fuelPrice.type} <br>&#36;${price} ${fuelPrice.price.currencyCode}`;
+    return `${fuelPrice.type} <br>&#36;<span class="fuel-price">${price}</span> ${fuelPrice.price.currencyCode}`;
   });
 
   let distanceinfo = "";
@@ -256,33 +331,40 @@ async function appendResults(place) {
   }
   let fuelordered = fueldata.reverse().map(price => `<span>${price}</span>`).join('');
 
-  gasitem.innerHTML = `<div class="gas-item-div">
-                        <div>
-                          <span style="font-weight: 500;">
-                            ${place.displayName}
-                          </span>
-                          <br>
-                          <span class="gas-address">
-                            ${place.formattedAddress.split(',')[0]}
-                          </span><br>
+  gasitem.innerHTML = ` <div class="gas-item-div">
+                          <div class="gas-item-bar">
+                            <div>
+                              <span style="font-weight: 500; font-size: 18px;">
+                                ${place.displayName}
+                              </span>
+                              <br>
+                              <span class="gas-address">
+                                ${place.formattedAddress.split(',')[0]}
+                              </span>
+                              <br>
+                            </div>
+                            <div class="gas-item-button">
+                              <button class="star-button">
+                                <img src="images/icons/star.png">
+                              </button>
+                              <button class="open-google-button">
+                                <img src="images/icons/share.png">
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <div class="gas-item-button">
-                          <button class="star-button">
-                            <img src="images/icons/star.png">
-                          </button>
-                          <button class="open-google-button">
-                            <img src="images/icons/map.png">
-                          </button>
+
+                        <br>
+                        <span class="switch-prices">credit price</span><br>
+                        
+                        <div class="gas-data-div">
+                          ${fuelordered}
                         </div>
-                      </div>
-                      <span style="color: orange; font-size: 12px; margin: 0; margin-bottom: -10px;">credit prices</span><br>
-                      <div class="gas-data-div">
-                        ${fuelordered}
-                      </div>
-                      <span style="font-size: 14px; font-weight: 400;";>
-                        ${distanceinfo}
-                      </span>
-                      </div>`;
+
+                        <span style="font-size: 14px; font-weight: 400;";>
+                          ${distanceinfo}
+                        </span>
+                      `;
 
   gasitem.querySelector('.gas-address').addEventListener('click', function(event) {
     event.stopPropagation(); // prevent parent event to activate
@@ -301,6 +383,7 @@ async function appendResults(place) {
     window.open(url, '_blank');
   })
 
+  // to-do star button (add star to marker)
   gasitem.querySelector('.star-button').addEventListener('click', function(event) {
     event.stopPropagation(); // prevent parent event to activate
     if (this.classList.contains('toggle')) {
@@ -314,7 +397,7 @@ async function appendResults(place) {
 
   gasitem.dataset.latitude = place.location.lat();
   gasitem.dataset.longitude = place.location.lng();
-  gasitem.dataset.markerIndex = markers.length;
+  // gasitem.dataset.markerIndex = markers.length;
   gasitem.dataset.address = place.formattedAddress;
 
   gasitem.addEventListener('click', function() {
@@ -322,21 +405,35 @@ async function appendResults(place) {
     const lng = parseFloat(this.dataset.longitude);
     map.panTo({ lat: lat, lng: lng });
 
-    if (index != null && index <= markers.length - 1) {
-      markers[index].setIcon({
-        url: "images/icons/marker.png",
+    if (prevMarker) {
+      prevMarker.setZIndex(0);
+      prevMarker.setIcon({
+        url: `images/icons/markers/${prevMarker.get('num')}.png`,
         scaledSize: new google.maps.Size(32, 32),
+      });
+      prevMarker.setLabel({
+        text: `$${prevMarker.get('price')}`,
+        fontSize: "12px",
+        className: "price-label small",
       })
+      prevMarker.set('size', 'small');
     }
 
     for (let i = 0; i < markers.length; i++) {
       const markerpos = markers[i].getPosition();
       if (markerpos.lat() === lat && markerpos.lng() === lng) {
-        index = i;
+        markers[i].setZIndex(1);
         markers[i].setIcon({
-          url: "images/icons/marker.png",
+          url: `images/icons/markers/${markers[i].get('num')}.png`,
           scaledSize: new google.maps.Size(48, 48),
         })
+        markers[i].setLabel({
+          text: `$${markers[i].get('price')}`,
+          fontSize: "12px",
+          className: "price-label big",
+        })
+        markers[i].set('size', 'big');
+        prevMarker = markers[i];
         break;
       }
     }
@@ -344,9 +441,11 @@ async function appendResults(place) {
 
   results.appendChild(gasitem);
   createMarker(place); // add markers here
+  markernum += 1;
+
   addresses.push(place.formattedAddress);
 
-  results.style.display = "block";    
+  document.getElementById('results-tab').style.display = "block";    
 }
 
 async function getDistanceInfo(place) {
@@ -378,35 +477,50 @@ async function getDistanceInfo(place) {
 }
 
 function createMarker(place) {
-  const marker = new google.maps.Marker({
-    map: map,
-    position: place.location,
-    icon: {
-      url: "images/icons/marker.png",
-      scaledSize: new google.maps.Size(32, 32),
-    }
-  });
-
   const gasdata = document.createElement('div');
-  gasdata.setAttribute("class", "gas-data")
+  gasdata.setAttribute("class", "marker-data")
 
   const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
     const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
     if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      gasdata.dataset.price = price;
       return `REGULAR &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
     }
     return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
   });
 
-  gasdata.innerHTML = `<strong>
-                         ${place.displayName}
-                       </strong><br>
-                       <span class="gas-address">
-                         ${place.formattedAddress}
-                       </span><br>
-                       <span class="gas-prices">` + 
-                         fuelPricesArray.reverse().join('<br>') + 
-                      `</span></div>`;
+  const marker = new google.maps.Marker({
+    map: map,
+    position: place.location,
+    icon: {
+      url: `images/icons/markers/${markernum}.png`,
+      scaledSize: new google.maps.Size(32, 32),
+    },
+    label: {
+      text: `$${gasdata.dataset.price}`,
+      fontSize: "12px",
+      className: "price-label small",
+    },
+    zIndex: 0,
+  });
+  marker.set('price', gasdata.dataset.price);
+  marker.set('num', markernum);
+  marker.set('size', 'small');
+
+  gasdata.innerHTML = `
+                      <div>
+                        <span style="font-weight: 500; font-size: 14px;">
+                          ${place.displayName}
+                        </span>
+                        <br>
+                        <span style="font-weight: 400; font-size: 12px;">
+                          ${place.formattedAddress.split(',')[0]}
+                        </span>
+                      </div>
+                      <span style="font-weight: 300; font-size: 12px;">
+                        ${fuelPricesArray.reverse().join('<br>')} 
+                      </span>
+                      </div>`;
 
   google.maps.event.addListener(marker, 'mouseover', function() {
     infowindow.setContent(gasdata);
@@ -423,24 +537,32 @@ function createMarker(place) {
       gasitem.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    if (index != null && index <= markers.length - 1) {
-      markers[index].setIcon({
-        url: "images/icons/marker.png",
+    if (prevMarker) {
+      prevMarker.setZIndex(0);
+      prevMarker.setIcon({
+        url: `images/icons/markers/${prevMarker.get('num')}.png`,
         scaledSize: new google.maps.Size(32, 32),
       });
+      prevMarker.setLabel({
+        text: `$${prevMarker.get('price')}`,
+        fontSize: "12px",
+        className: "price-label small",
+      })
+      prevMarker.set('size', 'small');
     }
 
-    for (let i = 0; i < markers.length; i++) {
-      const markerpos = markers[i].getPosition();
-      if (markerpos.lat() === place.location.lat() && markerpos.lng() === place.location.lng()) {
-        index = i;
-        markers[i].setIcon({
-          url: "images/icons/marker.png",
-          scaledSize: new google.maps.Size(48, 48), 
-        });
-        break;
-      }
-    }
+    marker.setZIndex(1);
+    marker.setIcon({
+      url: `images/icons/markers/${marker.get('num')}.png`,
+      scaledSize: new google.maps.Size(48, 48), 
+    })
+    marker.setLabel({
+      text: `$${marker.get('price')}`,
+      fontSize: "12px",
+      className: "price-label big",
+    })
+    marker.set('size', 'big');
+    prevMarker = marker;
   });
 
   markers.push(marker);
@@ -449,7 +571,7 @@ function createMarker(place) {
 function clearResults() {
   newPos = false;
   const results = document.getElementById('results-list');
-  results.classList.remove('collapse');
+  document.getElementById('results-tab').classList.remove('collapse');
   document.getElementById('range-options').classList.remove('collapse');
   document.getElementById('sort-options').classList.remove('collapse');
   while (results.firstChild) {
@@ -465,7 +587,8 @@ function clearMarkers() {
     markers[i].setMap(null);
   }
   markers = [];
-  index = null;
+  prevMarker = null;
+  markernum = 1;
 }
 
 function clearInput() {

@@ -8,6 +8,7 @@ html, body {
   padding: 0;
   touch-action: none;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none; /* remove scroll bouncing */
 }
 
 #side-bar {
@@ -271,8 +272,12 @@ html, body {
 
   #main-nav-bar {
     transform: none;
-    left: 15px;
-    right: 15px;
+    left: 50px;
+    right: 50px;
     width: auto;
+  }
+
+  #search-bar::placeholder {
+    text-align: center;
   }
 }

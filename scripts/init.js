@@ -1,4 +1,4 @@
-let map, places, geocoder, infowindow, distancematrix, markers = [], index;
+let map, places, geocoder, infowindow, distancematrix, markers = [], markernum = 1;
 
 
 let size = 3220; // approximately 2 miles
@@ -388,7 +388,7 @@ async function appendResults(place) {
     if (prevMarker) {
       prevMarker.setZIndex(0);
       prevMarker.setIcon({
-        url: "images/icons/marker.png",
+        url: `images/icons/markers/${prevMarker.get('num')}.png`,
         scaledSize: new google.maps.Size(32, 32),
       });
       prevMarker.setLabel({
@@ -403,7 +403,7 @@ async function appendResults(place) {
       if (markerpos.lat() === lat && markerpos.lng() === lng) {
         markers[i].setZIndex(1);
         markers[i].setIcon({
-          url: "images/icons/marker.png",
+          url: `images/icons/markers/${markers[i].get('num')}.png`,
           scaledSize: new google.maps.Size(48, 48),
         })
         markers[i].setLabel({
@@ -419,6 +419,7 @@ async function appendResults(place) {
 
   results.appendChild(gasitem);
   createMarker(place); // add markers here
+  markernum += 1;
 
   addresses.push(place.formattedAddress);
 
@@ -470,7 +471,7 @@ function createMarker(place) {
     map: map,
     position: place.location,
     icon: {
-      url: "images/icons/marker.png",
+      url: `images/icons/markers/${markernum}.png`,
       scaledSize: new google.maps.Size(32, 32),
     },
     label: {
@@ -481,6 +482,7 @@ function createMarker(place) {
     zIndex: 0,
   });
   marker.set('price', gasdata.dataset.price);
+  marker.set('num', markernum);
 
   gasdata.innerHTML = `
                       <div>
@@ -515,7 +517,7 @@ function createMarker(place) {
     if (prevMarker) {
       prevMarker.setZIndex(0);
       prevMarker.setIcon({
-        url: "images/icons/marker.png",
+        url: `images/icons/markers/${prevMarker.get('num')}.png`,
         scaledSize: new google.maps.Size(32, 32),
       });
       prevMarker.setLabel({
@@ -527,7 +529,7 @@ function createMarker(place) {
 
     marker.setZIndex(1);
     marker.setIcon({
-      url: "images/icons/marker.png",
+      url: `images/icons/markers/${marker.get('num')}.png`,
       scaledSize: new google.maps.Size(48, 48), 
     })
     marker.setLabel({
@@ -560,8 +562,8 @@ function clearMarkers() {
     markers[i].setMap(null);
   }
   markers = [];
-  index = null;
   prevMarker = null;
+  markernum = 1;
 }
 
 function clearInput() {

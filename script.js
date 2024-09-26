@@ -1,18 +1,19 @@
-let map, places, geocoder, infowindow, distancematrix;
+let map, places, geocoder, infoWindow, distanceMatrix; // important shared variables
+let zoom = 16; // default zoom level
+let daily = 0;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
-  const { Place, SearchNearbyRankPreference  } = await google.maps.importLibrary("places");
+  const { Place  } = await google.maps.importLibrary("places");
 
   geocoder = new google.maps.Geocoder();
-  infowindow = new google.maps.InfoWindow();
-  distancematrix = new google.maps.DistanceMatrixService();
+  infoWindow = new google.maps.InfoWindow();
+  distanceMatrix = new google.maps.DistanceMatrixService();
   places = Place;
-  rankPreference = SearchNearbyRankPreference;
 
   map = new Map(document.getElementById("map"), {
     center: { lat: 0, lng: 0 },
-    zoom: 16,
+    zoom: zoom,
     disableDefaultUI: true,
     zoomControl: true,
     zoomControlOptions: {
@@ -37,7 +38,10 @@ async function initMap() {
     ],
   });
 
+  document.getElementById("search-count").innerText = `${daily}`;
+
   centerOnUser();
+  initAutoComplete();
 }
 
 function centerOnUser() {
@@ -55,6 +59,66 @@ function centerOnUser() {
       }
     );
   }
+}
+
+function initAutoComplete() {
+  const input = document.getElementById('search-input');
+  let autoComplete = new google.maps.places.Autocomplete(input);
+  const searchBar = document.getElementById('search-bar')
+
+  input.addEventListener('input', () => {
+    const pacContainer = document.querySelector('.pac-container');
+    const address = document.getElementById('search-input').value.trim();
+    if (address.length === 1 && isAlphanumeric(address)) {
+      setTimeout(() => {
+        searchBar.style.borderRadius = "20px 20px 0 0";
+      }, 150);
+    } else if (address) {
+      setTimeout(() => {
+        if (pacContainer && pacContainer.style.display !== 'none') {
+          searchBar.style.borderRadius = "20px 20px 0 0";
+        } else {
+          searchBar.style.borderRadius = "20px";
+        }
+      }, 300);
+    } else {
+      searchBar.style.borderRadius = "20px";
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    searchBar.style.borderRadius = "20px";
+  });
+
+  input.addEventListener('focus', () => {
+    const pacContainer = document.querySelector('.pac-container');
+    const address = document.getElementById('search-input').value.trim();
+    if (address) {
+      setTimeout(() => {
+        if (pacContainer && pacContainer.style.display !== 'none') {
+          searchBar.style.borderRadius = "20px 20px 0 0";
+        }
+      }, 0);
+    }
+  });
+
+  autoComplete.addListener('place_changed', () => {
+    const address = document.getElementById('search-input').value.trim();
+    
+    geocoder.geocode({ 'address': address }, function(results, status) {
+      if (status === 'OK') {
+        const location = results[0].geometry.location;
+        map.setCenter(location);
+      } else {
+        alert('Geocoder was unsucessful: ' + status);
+      }
+    });
+  });
+}
+
+function isAlphanumeric(str) {
+  const regex = /^[a-zA-Z0-9]+$/;
+  return regex.test(str);
 }
 
 initMap();

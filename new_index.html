@@ -20,7 +20,7 @@
       </nav>
 
       <section id="search-bar">
-        <input type="text" placeholder="Search address">
+        <input id="search-input" type="text" placeholder="Search address">
         <button>
           <img src="images/icons/search.png">
         </button>
@@ -35,12 +35,24 @@
         </button>
       </nav>
     </nav>
+
+    <button id="show-gas-button">
+      Search prices here
+    </button>
+
+    <div id="autocomplete-list"></div>
     
     <div id="map"></div>
+
+    <div id="daily-counter">Searches today: <span id="search-count"></span></div>
     
     <section id="description">
       Lorem ipsum odor amet, consectetuer adipiscing elit. Dapibus himenaeos himenaeos eleifend netus sit blandit. Class aliquet curabitur aliquet tristique eros scelerisque vel magna. Tempus a neque efficitur volutpat vulputate. Malesuada condimentum proin; fames ut duis dis. Penatibus sapien tincidunt tellus magna metus semper. Dapibus conubia ultricies id euismod efficitur odio. Inceptos conubia nostra vehicula etiam elementum vivamus quis litora suspendisse.
     </section>
+
+    <footer>
+      <p>&copy; 2024 Gas Tracker Company, Inc. All Rights Reserved.</p>
+    </footer>
     
     <!-- prettier-ignore -->
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})

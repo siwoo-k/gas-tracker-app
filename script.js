@@ -117,12 +117,13 @@ function initAutoComplete() {
 
   autoComplete.addListener('place_changed', () => {
     const address = document.getElementById('search-input').value.trim();
-    
     geocoder.geocode({ 'address': address }, function(results, status) {
       if (status === 'OK') {
         const location = results[0].geometry.location;
         map.setCenter(location);
         map.panTo(location);
+        addSearchCount();
+        searchBar.style.borderRadius = "20px";
       } else {
         alert('Geocoder was unsucessful: ' + status);
       }
@@ -143,6 +144,8 @@ function initAutoComplete() {
         const location = results[0].geometry.location;
         map.setCenter(location);
         map.panTo(location);
+        addSearchCount();
+        searchBar.style.borderRadius = "20px";
       } else {
         alert('No address found! Try again');
       }
@@ -153,6 +156,11 @@ function initAutoComplete() {
 function isAlphanumeric(str) {
   const regex = /^[a-zA-Z0-9]+$/;
   return regex.test(str);
+}
+
+function addSearchCount() {
+  daily += 1;
+  document.getElementById("search-count").innerText = `${daily}`;
 }
 
 initMap();

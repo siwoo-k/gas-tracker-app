@@ -16,7 +16,7 @@ body {
   right: 20px;
   height: 55px;
   background-color: rgb(255, 255, 255);
-  z-index: 1;
+  z-index: 2;
 }
 
 #main-nav-bar, #left-sub-bar {
@@ -174,7 +174,7 @@ footer {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   color: rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  display: flex;
+  display: none;
   font-size: 14px;
   padding: 10px 14px;
 }

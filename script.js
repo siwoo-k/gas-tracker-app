@@ -40,11 +40,15 @@ async function initMap() {
 
   document.getElementById("search-count").innerText = `${daily}`;
 
-  centerOnUser();
-  initAutoComplete();
+  google.maps.event.addListener(map, "dragend", function() {
+    document.getElementById('show-gas-button').style.display = "flex";
+  });
+
+  centerUser();
+  initSearch();
 }
 
-function centerOnUser() {
+function centerUser() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(position) {
@@ -61,15 +65,17 @@ function centerOnUser() {
   }
 }
 
-function initAutoComplete() {
+async function initSearch() {
   const input = document.getElementById('search-input');
   let autoComplete = new google.maps.places.Autocomplete(input);
   const searchBar = document.getElementById('search-bar');
   const closeButton = document.getElementById('close-button');
   const searchButton = document.getElementById('search-button');
+  const showGasButton = document.getElementById('show-gas-button');
   searchButton.disabled = true;
 
   input.addEventListener('input', () => {
+    document.getElementById('show-gas-button').style.display = "none";
     const pacContainer = document.querySelector('.pac-container');
     const address = document.getElementById('search-input').value.trim();
 
@@ -115,19 +121,15 @@ function initAutoComplete() {
     }
   });
 
+  input.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      document.activeElement.blur();
+      getGeocode();
+    }
+  });
+
   autoComplete.addListener('place_changed', () => {
-    const address = document.getElementById('search-input').value.trim();
-    geocoder.geocode({ 'address': address }, function(results, status) {
-      if (status === 'OK') {
-        const location = results[0].geometry.location;
-        map.setCenter(location);
-        map.panTo(location);
-        addSearchCount();
-        searchBar.style.borderRadius = "20px";
-      } else {
-        alert('Geocoder was unsucessful: ' + status);
-      }
-    });
+    getGeocode();
   });
 
   closeButton.addEventListener('click', function() {
@@ -135,22 +137,17 @@ function initAutoComplete() {
     closeButton.style.display = "none";
     searchButton.classList.remove('active');
     searchButton.disabled = true;
+    document.getElementById('show-gas-button').style.display = "none";
   });
 
   searchButton.addEventListener('click', function() {
-    const address = document.getElementById('search-input').value.trim();
-    geocoder.geocode({ 'address': address }, function(results, status) {
-      if (status === 'OK') {
-        const location = results[0].geometry.location;
-        map.setCenter(location);
-        map.panTo(location);
-        addSearchCount();
-        searchBar.style.borderRadius = "20px";
-      } else {
-        alert('No address found! Try again');
-      }
-    });
+    getGeocode();
   });
+
+  showGasButton.addEventListener('click', function() {
+    showGasButton.style.display = "none";
+    showGasStations(map.getCenter()); // skip geocode process
+  })
 }
 
 function isAlphanumeric(str) {
@@ -161,6 +158,41 @@ function isAlphanumeric(str) {
 function addSearchCount() {
   daily += 1;
   document.getElementById("search-count").innerText = `${daily}`;
+}
+
+function getGeocode() {
+  const address = document.getElementById('search-input').value.trim();
+  geocoder.geocode({ 'address': address }, function(results, status) {
+    if (status === 'OK') {
+      const location = results[0].geometry.location;
+      map.setCenter(location);
+      map.panTo(location);
+      addSearchCount();
+      document.getElementById('search-bar').style.borderRadius = "20px";
+      document.getElementById('show-gas-button').style.display = "none";
+      showGasStations(location); // call show gas here
+    } else {
+      alert('No address found! Try again');
+    }
+  });
+}
+
+async function showGasStations(location) {
+  alert('yes');
+  const request = {
+    fields: ["displayName", 
+             "location", 
+             "formattedAddress", 
+             "fuelOptions"],
+    locationRestriction: {
+      center: location,
+      radius: size,
+    },
+    includedPrimaryTypes: ["gas_station"],
+    maxResultCount: maxResult,
+    rankPreference: rankPreference.DISTANCE,
+    language: "en-US",
+  };
 }
 
 initMap();

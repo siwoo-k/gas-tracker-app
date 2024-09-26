@@ -64,15 +64,22 @@ function centerOnUser() {
 function initAutoComplete() {
   const input = document.getElementById('search-input');
   let autoComplete = new google.maps.places.Autocomplete(input);
-  const searchBar = document.getElementById('search-bar')
+  const searchBar = document.getElementById('search-bar');
+  const closeButton = document.getElementById('close-button');
+  const searchButton = document.getElementById('search-button');
+  searchButton.disabled = true;
 
   input.addEventListener('input', () => {
     const pacContainer = document.querySelector('.pac-container');
     const address = document.getElementById('search-input').value.trim();
+
     if (address.length === 1 && isAlphanumeric(address)) {
       setTimeout(() => {
         searchBar.style.borderRadius = "20px 20px 0 0";
       }, 150);
+      closeButton.style.display = "inline-block";
+      searchButton.classList.add('active');
+      searchButton.disabled = false;
     } else if (address) {
       setTimeout(() => {
         if (pacContainer && pacContainer.style.display !== 'none') {
@@ -81,8 +88,14 @@ function initAutoComplete() {
           searchBar.style.borderRadius = "20px";
         }
       }, 300);
+      closeButton.style.display = "inline-block";
+      searchButton.classList.add('active');
+      searchButton.disabled = false;
     } else {
       searchBar.style.borderRadius = "20px";
+      closeButton.style.display = "none";
+      searchButton.classList.remove('active');
+      searchButton.disabled = true;
     }
   });
 
@@ -109,8 +122,29 @@ function initAutoComplete() {
       if (status === 'OK') {
         const location = results[0].geometry.location;
         map.setCenter(location);
+        map.panTo(location);
       } else {
         alert('Geocoder was unsucessful: ' + status);
+      }
+    });
+  });
+
+  closeButton.addEventListener('click', function() {
+    input.value = "";
+    closeButton.style.display = "none";
+    searchButton.classList.remove('active');
+    searchButton.disabled = true;
+  });
+
+  searchButton.addEventListener('click', function() {
+    const address = document.getElementById('search-input').value.trim();
+    geocoder.geocode({ 'address': address }, function(results, status) {
+      if (status === 'OK') {
+        const location = results[0].geometry.location;
+        map.setCenter(location);
+        map.panTo(location);
+      } else {
+        alert('No address found! Try again');
       }
     });
   });

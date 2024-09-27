@@ -157,10 +157,6 @@ body {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-#daily-counter {
-  color: rgba(0, 0, 0, 0.8);
-}
-
 .gm-style iframe + div { border:none!important; }
 
 #description, footer, #daily-counter {
@@ -174,6 +170,11 @@ body {
   bottom: 40px;
   width: 800px;
   color: rgba(0, 0, 0, 0.5);
+}
+
+#daily-counter {
+  color: rgba(0, 0, 0, 0.8);
+  top: -55px;
 }
 
 footer {

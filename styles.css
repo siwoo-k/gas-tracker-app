@@ -127,8 +127,7 @@ body {
   position: absolute;
   width: 100%;
   display: flex;
-  left: 150px;
-  right: 150px;
+  justify-content: center;  /* Center the map inside main-ui */
 }
 
 #map {
@@ -139,22 +138,36 @@ body {
 }
 
 #map.collapse {
-  width: 835px;
+  width: 870px;
+}
+
+#gas-page {
+  margin: 0;
+  width: 0;
+  height: 520px;
+  opacity: 0;
+  transition: width 0.5s, opacity 0.5s, margin-left 0.5s;
+}
+
+#gas-page.show {
+  width: 280px;
+  opacity: 1;
+  margin-left: 50px;
+}
+
+#filter-buttons {
+  height: 15%;
+  width: 100%;
+  background-color: pink;
 }
 
 #gas-list {
   margin: 0;
-  background-color: transparent;
-  width: 0;
-  height: 520px;
-  border-radius: 10px;
-  margin-left: 45px;
-  transition: width 0.5s, background-color 0.5s;
-}
-
-#gas-list.show {
-  width: 280px;
+  padding: 0;
   background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  height: 85%;
+  width: 100%;
 }
 
 .gm-style iframe + div { border:none!important; }

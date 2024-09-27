@@ -7,7 +7,8 @@ html, body {
 }
 
 body {
-  height: 800px;
+  height: 825px;
+  position: relative;
 }
 
 #main-nav-bar {
@@ -121,16 +122,43 @@ body {
   opacity: 0.6;
 }
 
-#map {
-  margin-top: 80px;
+#main-ui {
+  top: 100px;
   position: absolute;
-  height: 500px;
-  width: 800px;
-  left: 50%;
-  transform: translate(-50%, 0);
-  border-radius: 16px;
-  transition: transform 0.3s;
-  z-index: 0;
+  width: 100%;
+  display: flex;
+  left: 150px;
+  right: 150px;
+}
+
+#map {
+  height: 520px;
+  width: 1200px;
+  border-radius: 10px;
+  transition: width 0.5s;
+}
+
+#map.collapse {
+  width: 835px;
+}
+
+#gas-list {
+  margin: 0;
+  background-color: transparent;
+  width: 0;
+  height: 520px;
+  border-radius: 10px;
+  margin-left: 45px;
+  transition: width 0.5s, background-color 0.5s;
+}
+
+#gas-list.show {
+  width: 280px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+#daily-counter {
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .gm-style iframe + div { border:none!important; }
@@ -143,7 +171,7 @@ body {
 }
 
 #description {
-  top: 660px;
+  bottom: 40px;
   width: 800px;
   color: rgba(0, 0, 0, 0.5);
 }
@@ -154,12 +182,6 @@ footer {
   background-color: rgb(255, 255, 255);
   font-size: 12px;
   width: 100%;
-}
-
-#daily-counter {
-  color: rgba(0, 0, 0, 0.8);
-  top: 600px;
-  width: 800px;
 }
 
 #show-gas-button {

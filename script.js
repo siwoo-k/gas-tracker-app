@@ -195,4 +195,17 @@ async function showGasStations(location) {
   };
 }
 
+function toggleWindowSizing() {
+  const mapWindow = document.getElementById('map');
+  const gasList = document.getElementById('gas-list');
+
+  if (mapWindow.classList.contains('collapse')) {
+    mapWindow.classList.remove('collapse');
+    gasList.classList.remove('show');
+  } else {
+    mapWindow.classList.add('collapse');
+    gasList.classList.add('show');
+  }
+}
+
 initMap();

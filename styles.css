@@ -138,7 +138,7 @@ body {
 }
 
 #map.collapse {
-  width: 870px;
+  width: 830px;
 }
 
 #gas-page {
@@ -150,15 +150,37 @@ body {
 }
 
 #gas-page.show {
-  width: 280px;
+  width: 350px;
   opacity: 1;
-  margin-left: 50px;
+  margin-left: 20px;
 }
 
-#filter-buttons {
-  height: 15%;
-  width: 100%;
-  background-color: pink;
+#filter-page {
+  width: 70%;
+  height: 14.7%;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.filter-button {
+  padding: 8px 10px;
+  margin-right: 4px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 550;
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: background-color 0.1s, color 0.1s;
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.filter-button:active {
+  background-color: rgb(0, 0, 0);
+  color: white;
 }
 
 #gas-list {
@@ -166,7 +188,7 @@ body {
   padding: 0;
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
-  height: 85%;
+  height: 82%;
   width: 100%;
 }
 

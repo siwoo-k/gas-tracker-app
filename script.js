@@ -1,6 +1,7 @@
 let map, places, geocoder, infoWindow, distanceMatrix; // important shared variables
 let zoom = 16; // default zoom level
 let daily = 0;
+let markers = [], markernum = 1, prevMarker;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary("maps");
@@ -44,8 +45,31 @@ async function initMap() {
     document.getElementById('show-gas-button').style.display = "flex";
   });
 
-  centerUser();
+  // disable scrolling page when mouse is on map or gas list
+  const nonScrollable = document.querySelectorAll('.non-scrollable');
+  nonScrollable.forEach(div => {
+    div.addEventListener('mouseenter', toggleBodyScroll); 
+    div.addEventListener('mouseleave', toggleBodyScroll); 
+  });
+
+  centerIrvine();
   initSearch();
+}
+
+async function toggleBodyScroll() {
+  if (document.body.style.overflow === 'hidden') {
+    document.body.style.overflow = 'auto';
+  } else {
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function centerIrvine() {
+  let pos = {
+    lat: 33.65374485149536,
+    lng: -117.8364730390892
+  };
+  map.panTo({ lat: pos.lat, lng: pos.lng});
 }
 
 function centerUser() {
@@ -57,12 +81,25 @@ function centerUser() {
           lng: position.coords.longitude
         };
         map.panTo({ lat: pos.lat, lng: pos.lng });
+        createCenterMarker(pos);
       },
       function(error) {
         alert("Allow location permission to find your address: ", error);
       }
     );
   }
+}
+
+function createCenterMarker(pos) {
+  const marker = new google.maps.Marker({
+    map: map,
+    position: pos,
+    icon: {
+      url: `images/icons/user.png`,
+      scaledSize: new google.maps.Size(32, 32),
+    }
+  });
+  markers.push(marker);
 }
 
 async function initSearch() {
@@ -146,6 +183,7 @@ async function initSearch() {
 
   showGasButton.addEventListener('click', function() {
     showGasButton.style.display = "none";
+    map.setCenter(map.getCenter()); // manually set map center
     showGasStations(map.getCenter()); // skip geocode process
   })
 }
@@ -178,7 +216,8 @@ function getGeocode() {
 }
 
 async function showGasStations(location) {
-  alert('yes');
+  clearItems();
+  createCenterMarker(location);
   const request = {
     fields: ["displayName", 
              "location", 
@@ -186,26 +225,317 @@ async function showGasStations(location) {
              "fuelOptions"],
     locationRestriction: {
       center: location,
-      radius: size,
+      radius: 8046.72, // 5 mile
     },
     includedPrimaryTypes: ["gas_station"],
-    maxResultCount: maxResult,
-    rankPreference: rankPreference.DISTANCE,
+    maxResultCount: 10,
     language: "en-US",
   };
+
+  try {
+    const response = await places.searchNearby(request);
+    const gasResults = new Map();
+
+    response.places.forEach(place => {
+      if (place.fuelOptions && place.fuelOptions.fuelPrices) {
+        const address = place.formattedAddress;
+        if (!gasResults.has(address)) {
+          gasResults.set(address, place);
+        }
+      }
+    });
+
+    for (let place of gasResults.values()) {
+      await appendResults(place);
+    }
+    toggleWindowOn();
+  } catch (error) {
+    alert('Places service was unsuccessful: ' + error.message);
+  }
 }
 
-function toggleWindowSizing() {
+async function appendResults(place) {
+  const resultsWindow = document.getElementById('gas-list');
+  const numID = resultsWindow.getElementsByTagName('li').length + 1; // item number inside gas list
+  const gasItem = document.createElement('li');
+  gasItem.classList.add('gas-item');
+
+  const fuelData = new Map();
+  let fuelDataArray = [];
+  let frontPrice = null;
+
+  place.fuelOptions.fuelPrices.forEach(fuelPrice => {
+    const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
+    let fuelType = fuelPrice.type;
+    
+    if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      fuelType = 'REGULAR';
+      frontPrice = price;
+    }
+    
+    // for reference
+    fuelData.set(fuelType, {
+      price: price,
+      currency: fuelPrice.price.currencyCode
+    });
+
+    fuelDataArray.push(`<div>${fuelType}<br>&#36;<span class="fuel-price">${price}</span> ${fuelPrice.price.currencyCode}</div>`);
+  });
+
+  let fuelDataHTML = fuelDataArray.reverse().join('');
+
+  let distance = await getDistanceInfo(place);
+
+  // check if within 5 miles
+  if (distance !== undefined) {
+    if (parseFloat(distance) > 5 * 1.15) {
+      return;
+    }
+  }
+
+  // <span style="display: inline-block; margin-left: 5px;" class="front-price">
+  //   &#36;${frontPrice}
+  // </span>
+
+  gasItem.innerHTML = ` 
+                        <span style="font-weight: 500; font-size: 18px;">
+                          <span class="item-number">${numID}&#46;</span>
+                          ${place.displayName}
+                        </span>
+                        <br>
+                        <span class="item-address">
+                          ${place.formattedAddress.split(',')[0]}
+                        </span>
+                        <span style="font-size: 14px;">
+                        &#126; ${distance} away
+                        </span>
+                        <div class="item-bar">
+                          <div class="item-price">
+                            ${fuelDataHTML}
+                          </div>
+                        </div>
+                      `;
+
+  gasItem.querySelector('.item-address').addEventListener('click', function(event) {
+    event.stopPropagation(); // prevent parent event to activate
+    navigator.clipboard.writeText(place.formattedAddress)
+      .then(() => {
+        alert("Copied to clipboard!");
+      })
+      .catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+  });
+
+  gasItem.dataset.latitude = place.location.lat();
+  gasItem.dataset.longitude = place.location.lng();
+  // gasItem.dataset.markerIndex = markers.length;
+  gasItem.dataset.address = place.formattedAddress;
+
+  gasItem.addEventListener('click', function() {
+    const lat = parseFloat(this.dataset.latitude);
+    const lng = parseFloat(this.dataset.longitude);
+    map.panTo({ lat: lat, lng: lng });
+
+    if (prevMarker) {
+      prevMarker.setZIndex(0);
+      prevMarker.setIcon({
+        url: `images/icons/markers/${prevMarker.get('num')}.png`,
+        scaledSize: new google.maps.Size(32, 32),
+      });
+      prevMarker.setLabel({
+        text: `$${prevMarker.get('price')}`,
+        fontSize: "12px",
+        className: "price-label small",
+      })
+      prevMarker.set('size', 'small');
+    }
+
+    for (let i = 0; i < markers.length; i++) {
+      const markerpos = markers[i].getPosition();
+      if (markerpos.lat() === lat && markerpos.lng() === lng) {
+        markers[i].setZIndex(1);
+        markers[i].setIcon({
+          url: `images/icons/markers/${markers[i].get('num')}.png`,
+          scaledSize: new google.maps.Size(48, 48),
+        })
+        markers[i].setLabel({
+          text: `$${markers[i].get('price')}`,
+          fontSize: "12px",
+          className: "price-label big",
+        })
+        markers[i].set('size', 'big');
+        prevMarker = markers[i];
+        break;
+      }
+    }
+  });
+
+  resultsWindow.appendChild(gasItem);
+  createMarker(place);
+}
+
+function createMarker(place) {
+  const gasdata = document.createElement('div');
+  gasdata.setAttribute("class", "marker-data")
+
+  const fuelPricesArray = place.fuelOptions.fuelPrices.map(fuelPrice => {
+    const price = (fuelPrice.price.units - 0.01 + fuelPrice.price.nanos / 1e9).toFixed(2);
+    if (fuelPrice.type === 'REGULAR_UNLEADED') {
+      gasdata.dataset.price = price;
+      return `REGULAR &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+    }
+    return `${fuelPrice.type} &ensp;&#36;${price} ${fuelPrice.price.currencyCode}`;
+  });
+
+  const marker = new google.maps.Marker({
+    map: map,
+    position: place.location,
+    icon: {
+      url: `images/icons/markers/${markernum}.png`,
+      scaledSize: new google.maps.Size(32, 32),
+    },
+    label: {
+      text: `$${gasdata.dataset.price}`,
+      fontSize: "12px",
+      className: "price-label small",
+    },
+    zIndex: 0,
+  });
+  marker.set('price', gasdata.dataset.price);
+  marker.set('num', markernum);
+  marker.set('size', 'small');
+
+  gasdata.innerHTML = `
+                      <div>
+                        <span style="font-weight: 500; font-size: 14px;">
+                          ${place.displayName}
+                        </span>
+                        <br>
+                        <span style="font-weight: 400; font-size: 12px;">
+                          ${place.formattedAddress.split(',')[0]}
+                        </span>
+                      </div>
+                      <span style="font-weight: 300; font-size: 12px;">
+                        ${fuelPricesArray.reverse().join('<br>')} 
+                      </span>
+                      </div>`;
+
+  google.maps.event.addListener(marker, 'mouseover', function() {
+    infoWindow.setContent(gasdata);
+    infoWindow.open(map, marker);
+  });
+
+  google.maps.event.addListener(marker, 'mouseout', function() {
+    infoWindow.close();
+  });
+
+  google.maps.event.addListener(marker, 'click', function() {
+    const gasList = document.getElementById('gas-list');
+    const gasitem = gasList.querySelector(`li[data-latitude="${place.location.lat()}"][data-longitude="${place.location.lng()}"]`);
+    if (gasitem) {
+      gasitem.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    if (prevMarker) {
+      prevMarker.setZIndex(0);
+      prevMarker.setIcon({
+        url: `images/icons/markers/${prevMarker.get('num')}.png`,
+        scaledSize: new google.maps.Size(32, 32),
+      });
+      prevMarker.setLabel({
+        text: `$${prevMarker.get('price')}`,
+        fontSize: "12px",
+        className: "price-label small",
+      })
+      prevMarker.set('size', 'small');
+    }
+
+    marker.setZIndex(1);
+    marker.setIcon({
+      url: `images/icons/markers/${marker.get('num')}.png`,
+      scaledSize: new google.maps.Size(48, 48), 
+    })
+    marker.setLabel({
+      text: `$${marker.get('price')}`,
+      fontSize: "12px",
+      className: "price-label big",
+    })
+    marker.set('size', 'big');
+    prevMarker = marker;
+  });
+
+  markers.push(marker);
+  markernum += 1;
+}
+
+async function getDistanceInfo(place) {
+  const request = {
+    origins: [map.getCenter()], 
+    destinations: [place.location], 
+    travelMode: google.maps.TravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.IMPERIAL,
+  };
+
+  try {
+    const response = await new Promise((resolve, reject) => {
+      distanceMatrix.getDistanceMatrix(request, (response, status) => {
+        if (status === google.maps.DistanceMatrixStatus.OK) {
+          resolve(response);
+        } else {
+          reject(new Error(`Distance Matrix request failed with status: ${status}`));
+        }
+      });
+    });
+    const results = response.rows[0].elements[0];
+    const distance = results.distance.text;
+    const duration = results.duration.text;
+
+    return distance;
+  } catch (error) {
+    // do nothing here
+  }
+}
+
+function toggleWindowOn() {
+  const mapWindow = document.getElementById('map');
+  const gasPage = document.getElementById('gas-page');
+
+  if (!mapWindow.classList.contains('collapse')) {
+    mapWindow.classList.add('collapse');
+    gasPage.classList.add('show');
+  }
+}
+
+function toggleWindowOff() {
   const mapWindow = document.getElementById('map');
   const gasPage = document.getElementById('gas-page');
 
   if (mapWindow.classList.contains('collapse')) {
     mapWindow.classList.remove('collapse');
     gasPage.classList.remove('show');
-  } else {
-    mapWindow.classList.add('collapse');
-    gasPage.classList.add('show');
   }
+}
+
+function clearItems() {
+  const resultsWindow = document.getElementById('gas-list');
+  while (resultsWindow.firstChild) {
+    resultsWindow.removeChild(resultsWindow.firstChild);
+  }
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+  markers = [];
+  markernum = 1;
+  prevMarker = null;
+}
+
+function clearWindow() {
+  const resultsWindow = document.getElementById('gas-list');
+  while (resultsWindow.firstChild) {
+    resultsWindow.removeChild(resultsWindow.firstChild);
+  }
+  toggleWindowOff();
 }
 
 initMap();

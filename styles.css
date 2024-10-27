@@ -412,3 +412,15 @@ footer {
 .price-label.big {
   margin-bottom: 72px; 
 }
+
+#cookie-window {
+  background-color: red;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  z-index: 10;
+  display: none;
+  transition: display 0.3s;
+}

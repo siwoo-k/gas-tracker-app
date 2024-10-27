@@ -56,6 +56,30 @@ async function initMap() {
   initSearch();
 }
 
+async function initCookies() {
+  if (document.cookie.includes("gastracker") || localStorage.getItem('cookies_enabled')) {
+    return;
+  }
+  const cookieWindow = document.getElementById('cookie-window');
+  cookieWindow.style.display = "inline-block";
+
+  const cookieButton = document.querySelectorAll('.cookie-button');
+  cookieButton.forEach((button) => {
+    button.addEventListener('click', function() {
+      cookieWindow.style.display = "none";
+
+      if (button.id == "accept-cookie") {
+        document.cookie = "cookieBy= gastracker; max-age" + 60 * 60 * 24 * 30; // cookie for 1 month
+        // remove consent window on second visit (if button is pressed)
+        localStorage.setItem('cookies_enabled', '1');
+      } else {
+        localStorage.setItem('cookies_enabled', '0');
+      }
+    });
+    
+  });
+}
+
 async function toggleBodyScroll() {
   if (document.body.style.overflow === 'hidden') {
     document.body.style.overflow = 'auto';
@@ -539,3 +563,4 @@ function clearWindow() {
 }
 
 initMap();
+initCookies();

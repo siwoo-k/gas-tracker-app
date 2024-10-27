@@ -186,12 +186,25 @@ async function initSearch() {
     if (event.key === 'Enter') {
       document.activeElement.blur();
       getGeocode();
+      console.log('pressed with enter')
     }
   });
 
   autoComplete.addListener('place_changed', () => {
     getGeocode();
+    console.log('pressed from results')
   });
+
+  searchButton.addEventListener('click', function() {
+    getGeocode();
+    console.log('pressed with search button')
+  });
+
+  showGasButton.addEventListener('click', function() {
+    showGasButton.style.display = "none";
+    map.setCenter(map.getCenter()); // manually set map center
+    showGasStations(map.getCenter()); // skip geocode process
+  })
 
   closeButton.addEventListener('click', function() {
     input.value = "";
@@ -200,16 +213,16 @@ async function initSearch() {
     searchButton.disabled = true;
     document.getElementById('show-gas-button').style.display = "none";
   });
+}
 
-  searchButton.addEventListener('click', function() {
-    getGeocode();
-  });
+function saveQuery(query) {
+  const searchHistory = JSON.parse(localStorage.getItem('search_history') || '[]');
+  searchHistory.push(query);
+  localStorage.setItem('search_history',JSON.stringify(searchHistory));
+}
 
-  showGasButton.addEventListener('click', function() {
-    showGasButton.style.display = "none";
-    map.setCenter(map.getCenter()); // manually set map center
-    showGasStations(map.getCenter()); // skip geocode process
-  })
+function clearHistory() {
+  localStorage.removeItem('search_history');
 }
 
 function isAlphanumeric(str) {
@@ -224,6 +237,7 @@ function addSearchCount() {
 
 function getGeocode() {
   const address = document.getElementById('search-input').value.trim();
+  saveQuery(address); // add query to search history
   geocoder.geocode({ 'address': address }, function(results, status) {
     if (status === 'OK') {
       const location = results[0].geometry.location;
@@ -563,4 +577,4 @@ function clearWindow() {
 }
 
 initMap();
-initCookies();
+// initCookies(); disable cookies
